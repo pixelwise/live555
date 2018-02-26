@@ -30,7 +30,7 @@ class MPEG2TransportStreamAccumulator: public FramedFilter {
 public:
   static MPEG2TransportStreamAccumulator* createNew(UsageEnvironment& env,
 						    FramedSource* inputSource,
-						    unsigned maxPacketSize = 1456);
+						    unsigned maxPacketSize = 10000);
 
 protected:
   MPEG2TransportStreamAccumulator(UsageEnvironment& env,
