@@ -118,7 +118,6 @@ static double dTimeNow() {
 }
 
 static unsigned const maxRTCPPacketSize = 10000;
-	// bytes (1500, minus some allowance for IP, UDP, UMTP headers)
 static unsigned const preferredRTCPPacketSize = 1000; // bytes
 
 RTCPInstance::RTCPInstance(UsageEnvironment& env, Groupsock* RTCPgs,
