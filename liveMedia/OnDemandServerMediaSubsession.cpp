@@ -465,7 +465,7 @@ void OnDemandServerMediaSubsession
 	  trackId()); // a=control:<track-id>
   delete[] (char*)rangeLine; delete[] rtpmapLine;
 
-  fSDPLines = strDup(sdpLines);
+  delete[] fSDPLines; fSDPLines = strDup(sdpLines);
   delete[] sdpLines;
 }
 

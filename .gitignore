@@ -1,1 +1,3 @@
 *.o
+\#*\#
+/BasicUsageEnvironment/.DS_Store
