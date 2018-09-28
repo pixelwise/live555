@@ -183,8 +183,6 @@ void MultiFramedRTPSource::doGetNextFrame1() {
 		    fCurPacketMarkerBit);
     fFrameSize += frameSize;
 
-    envir() << "rtsp packet seq " << fCurPacketRTPSeqNum << "\n";
-
     if (!nextPacket->hasUsableData()) {
       // We're completely done with this packet now
       fReorderingBuffer->releaseUsedPacket(nextPacket);
