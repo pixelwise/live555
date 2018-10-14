@@ -160,6 +160,7 @@ private:
 private:
   u_int8_t* fReceiveBuffer;
   MediaSubsession& fSubsession;
+  u_int32_t last_rtp_timestamp;
   char* fStreamId;
 };
 
@@ -478,7 +479,7 @@ DummySink* DummySink::createNew(UsageEnvironment& env, MediaSubsession& subsessi
 
 DummySink::DummySink(UsageEnvironment& env, MediaSubsession& subsession, char const* streamId)
   : MediaSink(env),
-    fSubsession(subsession) {
+    fSubsession(subsession), last_rtp_timestamp(0) {
   fStreamId = strDup(streamId);
   fReceiveBuffer = new u_int8_t[DUMMY_SINK_RECEIVE_BUFFER_SIZE];
 }
@@ -495,7 +496,7 @@ void DummySink::afterGettingFrame(void* clientData, unsigned frameSize, unsigned
 }
 
 // If you don't want to see debugging output for each received frame, then comment out the following line:
-#define DEBUG_PRINT_EACH_RECEIVED_FRAME 1
+#define DEBUG_PRINT_EACH_RECEIVED_FRAME 0
 
 void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes,
 				  struct timeval presentationTime, unsigned /*durationInMicroseconds*/) {
@@ -510,17 +511,23 @@ void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes
   if (fSubsession.rtpSource() != NULL && !fSubsession.rtpSource()->hasBeenSynchronizedUsingRTCP()) {
     envir() << "!"; // mark the debugging output to indicate that this presentation time is not RTCP-synchronized
   }
-  if (fSubsession.rtpSource())
-  {
-    u_int32_t rtp_timestamp = fSubsession.rtpSource()->curPacketRTPTimestamp();
-    u_int32_t rtp_timestamp_frequency = fSubsession.rtpSource()->timestampFrequency();
-    envir() << ".\tRTP: " << (int)rtp_timestamp;
-  }
 #ifdef DEBUG_PRINT_NPT
   envir() << "\tNPT: " << fSubsession.getNormalPlayTime(presentationTime);
 #endif
   envir() << "\n";
 #endif
+
+  if (fSubsession.rtpSource())
+  {
+    u_int32_t rtp_timestamp = fSubsession.rtpSource()->curPacketRTPTimestamp();
+    u_int32_t rtp_timestamp_frequency = fSubsession.rtpSource()->timestampFrequency();
+    if (last_rtp_timestamp > 0) {
+      u_int32_t delta = last_rtp_timestamp - rtp_timestamp;
+      envir() << "Delta: " << (int)delta;
+      envir() << "\n";
+    }
+    last_rtp_timestamp = rtp_timestamp;
+  }
   
   // Then continue, to request the next frame of data:
   continuePlaying();
