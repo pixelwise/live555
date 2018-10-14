@@ -496,7 +496,7 @@ void DummySink::afterGettingFrame(void* clientData, unsigned frameSize, unsigned
 }
 
 // If you don't want to see debugging output for each received frame, then comment out the following line:
-#define DEBUG_PRINT_EACH_RECEIVED_FRAME 0
+//#define DEBUG_PRINT_EACH_RECEIVED_FRAME 0
 
 void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes,
 				  struct timeval presentationTime, unsigned /*durationInMicroseconds*/) {
@@ -522,9 +522,11 @@ void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes
     u_int32_t rtp_timestamp = fSubsession.rtpSource()->curPacketRTPTimestamp();
     u_int32_t rtp_timestamp_frequency = fSubsession.rtpSource()->timestampFrequency();
     if (last_rtp_timestamp > 0) {
-      u_int32_t delta = last_rtp_timestamp - rtp_timestamp;
-      envir() << "Delta: " << (int)delta;
-      envir() << "\n";
+      u_int32_t delta = rtp_timestamp - last_rtp_timestamp;
+      if (delta > 3600) {
+          envir() << "Delta: " << (int)delta;
+          envir() << "\n";
+      }
     }
     last_rtp_timestamp = rtp_timestamp;
   }
