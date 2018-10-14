@@ -510,6 +510,12 @@ void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes
   if (fSubsession.rtpSource() != NULL && !fSubsession.rtpSource()->hasBeenSynchronizedUsingRTCP()) {
     envir() << "!"; // mark the debugging output to indicate that this presentation time is not RTCP-synchronized
   }
+  if (fSubsession.rtpSource())
+  {
+    u_int32_t rtp_timestamp = fSubsession.rtpSource()->curPacketRTPTimestamp();
+    u_int32_t rtp_timestamp_frequency = fSubsession.rtpSource()->timestampFrequency();
+    envir() << ".\tRTP: " << (int)rtp_timestamp;
+  }
 #ifdef DEBUG_PRINT_NPT
   envir() << "\tNPT: " << fSubsession.getNormalPlayTime(presentationTime);
 #endif
