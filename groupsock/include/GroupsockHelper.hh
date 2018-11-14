@@ -26,8 +26,13 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 int setupDatagramSocket(UsageEnvironment& env, Port port);
-int setupStreamSocket(UsageEnvironment& env,
-		      Port port, Boolean makeNonBlocking = True, Boolean setKeepAlive = False);
+int setupStreamSocket(
+    UsageEnvironment& env,
+	Port port,
+    Boolean makeNonBlocking = True,
+    Boolean setKeepAlive = False,
+    Boolean setNoDelay = False
+);
 
 int readSocket(UsageEnvironment& env,
 	       int socket, unsigned char* buffer, unsigned bufferSize,

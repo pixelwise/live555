@@ -250,8 +250,14 @@ Boolean setSocketKeepAlive(int sock) {
   return True;
 }
 
-int setupStreamSocket(UsageEnvironment& env,
-                      Port port, Boolean makeNonBlocking, Boolean setKeepAlive) {
+int setupStreamSocket(
+  UsageEnvironment& env,
+  Port port, 
+  Boolean makeNonBlocking,
+  Boolean setKeepAlive,
+  Boolean setNoDelay
+) 
+{
   if (!initializeWinsockIfNecessary()) {
     socketErr(env, "Failed to initialize 'winsock': ");
     return -1;
@@ -322,6 +328,16 @@ int setupStreamSocket(UsageEnvironment& env,
   if (setKeepAlive) {
     if (!setSocketKeepAlive(newSocket)) {
       socketErr(env, "failed to set keep alive: ");
+      closeSocket(newSocket);
+      return -1;
+    }
+  }
+
+  if (setNoDelay) {
+    int i = 1;
+    if (setsockopt(newSocket, IPPROTO_TCP, TCP_NODELAY,
+       (const char*)&i, sizeof i) < 0) {
+      socketErr(env, "setsockopt(TCP_NODELAY) error: ");
       closeSocket(newSocket);
       return -1;
     }
