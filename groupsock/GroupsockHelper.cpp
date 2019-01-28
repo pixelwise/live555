@@ -643,6 +643,7 @@ static Boolean badAddressForUs(netAddressBits addr) {
 Boolean loopbackWorks = 1;
 
 netAddressBits ourIPAddress(UsageEnvironment& env) {
+  return 0;
   static netAddressBits ourAddress = 0;
   int sock = -1;
   struct in_addr testAddr;
