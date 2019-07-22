@@ -13,13 +13,20 @@ project(Live555
     VERSION ${project_version}
 )
 message(STATUS "Live555 version: ${project_version}")
-
+set(
+    live555_SOURCE_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fPIC")
 
-list(APPEND CMAKE_MODULE_PATH ${live555_SOURCE_DIR}/cmake)
+set(
+    CMAKE_MODULE_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
+    ${CMAKE_MODULE_PATH}
+)
 include(TargetVersion)
 include(utils)
 
