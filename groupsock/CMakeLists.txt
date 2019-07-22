@@ -1,24 +1,9 @@
-set(headers
-    include/GroupEId.hh
-    include/Groupsock.hh
-    include/GroupsockHelper.hh
-    include/IOHandlers.hh
-    include/NetAddress.hh
-    include/NetCommon.h
-    include/NetInterface.hh
-    include/TunnelEncaps.hh
-    include/groupsock_version.hh
-)
+find_all_headers_and_sources()
 add_library(groupsock
     SHARED
-    ${headers}
-    GroupEId.cpp
-    Groupsock.cpp
-    GroupsockHelper.cpp
-    IOHandlers.cpp
-    NetAddress.cpp
-    NetInterface.cpp
-    inet.c
+    ${_public_headers}
+    ${_private_headers}
+    ${_all_srcs}
 )
 add_library(live555::groupsock ALIAS groupsock)
 target_include_directories(groupsock
@@ -27,7 +12,6 @@ target_include_directories(groupsock
 target_link_libraries(groupsock 
     live555_cxx_flags
     UsageEnvironment
-    #$<$<PLATFORM_ID:Windows>:ws2_32 mswsock>
 )
 if(WIN32)
     target_link_libraries(groupsock

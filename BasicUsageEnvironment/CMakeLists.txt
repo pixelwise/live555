@@ -1,20 +1,9 @@
-set(headers
-    include/BasicHashTable.hh
-    include/BasicUsageEnvironment.hh
-    include/BasicUsageEnvironment0.hh
-    include/BasicUsageEnvironment_version.hh
-    include/DelayQueue.hh
-    include/HandlerSet.hh
-)
+find_all_headers_and_sources()
 add_library(BasicUsageEnvironment
     SHARED
-    ${headers}
-    BasicHashTable.cpp
-    BasicTaskScheduler.cpp
-    BasicTaskScheduler0.cpp
-    BasicUsageEnvironment.cpp
-    BasicUsageEnvironment0.cpp
-    DelayQueue.cpp
+    ${_public_headers}
+    ${_private_headers}
+    ${_all_srcs}
 )
 add_library(live555::BasicUsageEnvironment ALIAS BasicUsageEnvironment)
 target_include_directories(BasicUsageEnvironment

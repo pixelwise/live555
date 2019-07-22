@@ -16,6 +16,7 @@ message(STATUS "live555 version: ${project_version}")
 
 list(APPEND CMAKE_MODULE_PATH ${live555_SOURCE_DIR}/cmake)
 include(TargetVersion)
+include(utils)
 
 option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" OFF)
 
