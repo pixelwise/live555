@@ -57,6 +57,26 @@ include(CMakePackageConfigHelpers)
 write_basic_package_version_file(${config_version_file}
                                  VERSION ${live555_VERSION}
                                  COMPATIBILITY ExactVersion)
+add_library(
+    all_libs
+    INTERFACE
+)
+target_link_libraries(
+    all_libs
+    INTERFACE
+    UsageEnvironment
+    BasicUsageEnvironment
+    groupsock
+    liveMedia
+)
+add_library(
+    live555::all_libs
+    ALIAS
+    all_libs
+)
+install(
+    TARGETS all_libs EXPORT live555Target
+)
 
 install(FILES ${config_version_file}
     DESTINATION lib/cmake/live555
