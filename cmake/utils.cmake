@@ -19,3 +19,11 @@ macro(find_all_headers_and_sources)
         "_all_srcs=${_all_srcs}"
     )
 endmacro()
+
+function(is_debug_build out)
+    STRING(TOUPPER "${CMAKE_BUILD_TYPE}" _CMAKE_BUILD_TYPE_UPPER)
+    if(_CMAKE_BUILD_TYPE_UPPER STREQUAL "DEBUG")
+        set(_TMP yes)
+    endif()
+    set( ${out}  ${_TMP} PARENT_SCOPE)
+endfunction()

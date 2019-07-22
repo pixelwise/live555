@@ -1,4 +1,11 @@
 function(live555_add_test_executable _target)
+    is_debug_build(IS_DEBUG)
+    if (IS_DEBUG)
+        set(
+            _target
+            "${_target}-debug"
+        )
+    endif()
     add_executable(${_target} ${ARGN})
     target_link_libraries(${_target} PRIVATE
         live555_cxx_flags
@@ -6,6 +13,10 @@ function(live555_add_test_executable _target)
         BasicUsageEnvironment
     )
     set_target_properties(${_target} PROPERTIES FOLDER "live555/testProgs")
+    install(
+        TARGETS ${_target}
+        RUNTIME DESTINATION bin
+    )
 endfunction()
 
 live555_add_test_executable(openRTSP
