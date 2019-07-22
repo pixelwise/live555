@@ -16,12 +16,4 @@ target_link_libraries(BasicUsageEnvironment PUBLIC
 live555_target_version(BasicUsageEnvironment AUTO)
 set_target_properties(BasicUsageEnvironment PROPERTIES FOLDER "live555/lib")
 
-install(TARGETS BasicUsageEnvironment EXPORT live555Target
-    INCLUDES DESTINATION include/BasicUsageEnvironment
-    RUNTIME DESTINATION bin/$<CONFIG>
-    LIBRARY DESTINATION lib/$<CONFIG>
-    ARCHIVE DESTINATION lib/$<CONFIG>
-)
-install(FILES ${headers}
-    DESTINATION include/BasicUsageEnvironment
-)
+install_target(BasicUsageEnvironment "${_public_headers}")

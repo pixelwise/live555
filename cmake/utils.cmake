@@ -40,3 +40,16 @@ macro(set_install_rpath)
         "_RPATH=${_RPATH}\nCMAKE_INSTALL_RPATH=${CMAKE_INSTALL_RPATH}"
     )
 endmacro()
+
+function(install_target target public_headers)
+    install(
+        TARGETS ${target} EXPORT live555Target
+        INCLUDES DESTINATION include/${target}
+        RUNTIME DESTINATION bin/$<CONFIG>
+        LIBRARY DESTINATION lib/$<CONFIG>
+        ARCHIVE DESTINATION lib/$<CONFIG>
+    )
+    install(FILES ${public_headers}
+        DESTINATION include/${target}
+    )
+endfunction()

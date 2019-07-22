@@ -16,12 +16,4 @@ target_link_libraries(UsageEnvironment PUBLIC live555_cxx_flags)
 live555_target_version(UsageEnvironment AUTO)
 set_target_properties(UsageEnvironment PROPERTIES FOLDER "live555/lib")
 
-install(TARGETS UsageEnvironment EXPORT live555Target
-    INCLUDES DESTINATION include/UsageEnvironment
-    RUNTIME DESTINATION bin/$<CONFIG>
-    LIBRARY DESTINATION lib/$<CONFIG>
-    ARCHIVE DESTINATION lib/$<CONFIG>
-)
-install(FILES ${headers}
-    DESTINATION include/UsageEnvironment
-)
+install_target(UsageEnvironment "${_public_headers}")

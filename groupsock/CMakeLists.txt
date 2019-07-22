@@ -22,12 +22,4 @@ endif()
 live555_target_version(groupsock AUTO)
 set_target_properties(groupsock PROPERTIES FOLDER "live555/lib")
 
-install(TARGETS groupsock EXPORT live555Target
-    INCLUDES DESTINATION include/groupsock
-    RUNTIME DESTINATION bin/$<CONFIG>
-    LIBRARY DESTINATION lib/$<CONFIG>
-    ARCHIVE DESTINATION lib/$<CONFIG>
-)
-install(FILES ${headers}
-    DESTINATION include/groupsock
-)
+install_target(groupsock "${_public_headers}")
