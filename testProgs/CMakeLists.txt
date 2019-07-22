@@ -4,7 +4,6 @@ function(live555_add_test_executable _target)
         live555_cxx_flags
         liveMedia
         BasicUsageEnvironment
-        $<$<TARGET_EXISTS:EpollTaskScheduler>:EpollTaskScheduler>
     )
     set_target_properties(${_target} PROPERTIES FOLDER "live555/testProgs")
 endfunction()
@@ -24,7 +23,6 @@ live555_add_test_executable(testRTSPClient testRTSPClient.cpp)
 live555_add_test_executable(testH264VideoStreamer testH264VideoStreamer.cpp)
 live555_add_test_executable(testOnDemandRTSPServer testOnDemandRTSPServer.cpp)
 
-# TODO: No epoll here yet
 live555_add_test_executable(MPEG2TransportStreamIndexer MPEG2TransportStreamIndexer.cpp)
 live555_add_test_executable(registerRTSPStream registerRTSPStream.cpp)
 live555_add_test_executable(sapWatch sapWatch.cpp)
