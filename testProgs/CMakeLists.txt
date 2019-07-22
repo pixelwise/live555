@@ -12,7 +12,7 @@ function(live555_add_test_executable _target)
         liveMedia
         BasicUsageEnvironment
     )
-    set_target_properties(${_target} PROPERTIES FOLDER "live555/testProgs")
+    set_target_properties(${_target} PROPERTIES FOLDER "Live555/testProgs")
     install(
         TARGETS ${_target}
         RUNTIME DESTINATION bin

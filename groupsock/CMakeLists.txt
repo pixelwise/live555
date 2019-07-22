@@ -5,7 +5,7 @@ add_library(groupsock
     ${_private_headers}
     ${_all_srcs}
 )
-add_library(live555::groupsock ALIAS groupsock)
+add_library(Live555::groupsock ALIAS groupsock)
 target_include_directories(groupsock
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
@@ -20,6 +20,6 @@ if(WIN32)
     )
 endif()
 live555_target_version(groupsock AUTO)
-set_target_properties(groupsock PROPERTIES FOLDER "live555/lib")
+set_target_properties(groupsock PROPERTIES FOLDER "Live555/lib")
 
 install_target(groupsock "${_public_headers}")

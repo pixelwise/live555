@@ -8,11 +8,11 @@ if(NOT DEFINED PROJECT_NAME)
     set(master_project TRUE)
 endif()
 
-project(live555 
+project(Live555
     LANGUAGES C CXX 
     VERSION ${project_version}
 )
-message(STATUS "live555 version: ${project_version}")
+message(STATUS "Live555 version: ${project_version}")
 
 list(APPEND CMAKE_MODULE_PATH ${live555_SOURCE_DIR}/cmake)
 include(TargetVersion)
@@ -70,7 +70,7 @@ target_link_libraries(
     liveMedia
 )
 add_library(
-    live555::all_libs
+    Live555::all_libs
     ALIAS
     all_libs
 )
@@ -79,11 +79,11 @@ install(
 )
 
 install(FILES ${config_version_file}
-    DESTINATION lib/cmake/live555
+    DESTINATION lib/cmake/Live555
 )
 
 install(EXPORT live555Target
-    NAMESPACE live555::
-    DESTINATION lib/cmake/live555
-    FILE live555Config.cmake
+    NAMESPACE Live555::
+    DESTINATION lib/cmake/Live555
+    FILE Live555Config.cmake
 )

@@ -9,4 +9,4 @@ target_link_libraries(live555MediaServer PRIVATE
     liveMedia
     BasicUsageEnvironment
 )
-set_target_properties(live555MediaServer PROPERTIES FOLDER "live555/Servers")
+set_target_properties(live555MediaServer PROPERTIES FOLDER "Live555/Servers")

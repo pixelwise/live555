@@ -5,7 +5,7 @@ add_library(BasicUsageEnvironment
     ${_private_headers}
     ${_all_srcs}
 )
-add_library(live555::BasicUsageEnvironment ALIAS BasicUsageEnvironment)
+add_library(Live555::BasicUsageEnvironment ALIAS BasicUsageEnvironment)
 target_include_directories(BasicUsageEnvironment
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
@@ -14,6 +14,6 @@ target_link_libraries(BasicUsageEnvironment PUBLIC
     UsageEnvironment
 )
 live555_target_version(BasicUsageEnvironment AUTO)
-set_target_properties(BasicUsageEnvironment PROPERTIES FOLDER "live555/lib")
+set_target_properties(BasicUsageEnvironment PROPERTIES FOLDER "Live555/lib")
 
 install_target(BasicUsageEnvironment "${_public_headers}")
