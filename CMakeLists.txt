@@ -17,6 +17,7 @@ message(STATUS "live555 version: ${project_version}")
 list(APPEND CMAKE_MODULE_PATH ${live555_SOURCE_DIR}/cmake)
 include(TargetVersion)
 include(utils)
+set_install_rpath()
 
 option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" OFF)
 
@@ -56,8 +57,6 @@ include(CMakePackageConfigHelpers)
 write_basic_package_version_file(${config_version_file}
                                  VERSION ${live555_VERSION}
                                  COMPATIBILITY ExactVersion)
-
-set_install_rpath()
 
 install(FILES ${config_version_file}
     DESTINATION lib/cmake/live555

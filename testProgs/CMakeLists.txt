@@ -18,7 +18,10 @@ function(live555_add_test_executable _target)
         RUNTIME DESTINATION bin
     )
 endfunction()
-
+message(
+    STATUS
+    "CMAKE_INSTALL_RPATH=${CMAKE_INSTALL_RPATH}"
+)
 live555_add_test_executable(openRTSP
     openRTSP.cpp
     playCommon.cpp

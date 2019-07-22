@@ -14,10 +14,6 @@ macro(find_all_headers_and_sources)
         "*.hpp"
     )
     aux_source_directory("${CMAKE_CURRENT_SOURCE_DIR}" _all_srcs)
-    message(
-        STATUS
-        "_all_srcs=${_all_srcs}"
-    )
 endmacro()
 
 function(is_debug_build out)
@@ -29,9 +25,18 @@ function(is_debug_build out)
 endfunction()
 
 macro(set_install_rpath)
+    set(
+        _RPATH
+        "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_BUILD_TYPE}"
+    )
+    SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     # the RPATH to be used when installing, but only if it's not a system directory
-    LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+    LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${_RPATH}" isSystemDir)
     IF("${isSystemDir}" STREQUAL "-1")
-        SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/$<CONFIG>")
+        LIST(APPEND CMAKE_INSTALL_RPATH "${_RPATH}")
     ENDIF("${isSystemDir}" STREQUAL "-1")
+    message(
+        STATUS
+        "_RPATH=${_RPATH}\nCMAKE_INSTALL_RPATH=${CMAKE_INSTALL_RPATH}"
+    )
 endmacro()
