@@ -27,3 +27,11 @@ function(is_debug_build out)
     endif()
     set( ${out}  ${_TMP} PARENT_SCOPE)
 endfunction()
+
+macro(set_install_rpath)
+    # the RPATH to be used when installing, but only if it's not a system directory
+    LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+    IF("${isSystemDir}" STREQUAL "-1")
+        SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/$<CONFIG>")
+    ENDIF("${isSystemDir}" STREQUAL "-1")
+endmacro()

@@ -57,6 +57,8 @@ write_basic_package_version_file(${config_version_file}
                                  VERSION ${live555_VERSION}
                                  COMPATIBILITY ExactVersion)
 
+set_install_rpath()
+
 install(FILES ${config_version_file}
     DESTINATION lib/cmake/live555
 )
