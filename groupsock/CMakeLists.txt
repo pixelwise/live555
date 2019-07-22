@@ -9,7 +9,8 @@ add_library(live555::groupsock ALIAS groupsock)
 target_include_directories(groupsock
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(groupsock 
+target_link_libraries(groupsock
+    PUBLIC
     live555_cxx_flags
     UsageEnvironment
 )

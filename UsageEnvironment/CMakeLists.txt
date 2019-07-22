@@ -1,15 +1,9 @@
-set(headers
-    include/Boolean.hh
-    include/HashTable.hh
-    include/UsageEnvironment.hh
-    include/UsageEnvironment_version.hh
-    include/strDup.hh
-)
+find_all_headers_and_sources()
 add_library(UsageEnvironment
-    ${headers}
-    HashTable.cpp
-    UsageEnvironment.cpp
-    strDup.cpp
+    SHARED
+    ${_public_headers}
+    ${_private_headers}
+    ${_all_srcs}
 )
 add_library(live555::UsageEnvironment ALIAS UsageEnvironment)
 target_include_directories(UsageEnvironment
