@@ -14,25 +14,55 @@ project(Live555
 )
 message(STATUS "Live555 version: ${project_version}")
 
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fPIC")
+
 list(APPEND CMAKE_MODULE_PATH ${live555_SOURCE_DIR}/cmake)
 include(TargetVersion)
 include(utils)
+
 set_install_rpath()
 
 option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" OFF)
 
 add_library(live555_cxx_flags INTERFACE)
 if(WIN32)
-    target_compile_definitions(live555_cxx_flags INTERFACE
+    set(
+        compile_defs
         LOCALE_NOT_USED
         SOCKLEN_T=int
     )
 else()
-    target_compile_definitions(live555_cxx_flags INTERFACE
+    set(
+        compile_defs
         BSD=1
         SOCKLEN_T=socklen_t
     )
+    if(APPLE)
+        LIST(
+            APPEND
+            compile_defs
+            TIME_BASE=int
+            NEED_XLOCALE_H=1
+            HAVE_SOCKADDR_LEN=1
+        )
+    else()
+        LIST(
+            APPEND
+            compile_defs
+            _LARGEFILE_SOURCE=1
+            _FILE_OFFSET_BITS=64
+        )
+    endif()
 endif()
+
+
+target_compile_definitions(
+    live555_cxx_flags INTERFACE
+    ${compile_defs}
+)
 install(TARGETS live555_cxx_flags EXPORT live555Target)
 
 add_subdirectory(UsageEnvironment)
