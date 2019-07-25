@@ -21,6 +21,17 @@ set(
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fPIC")
+if(USE_LIBCXX)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -stdlib=libc++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
+    set(
+        dependency_libcxx_flags
+        "-DCMAKE_C_FLAGS=-stdlib=libc++"
+        "-DCMAKE_CXX_FLAGS=-stdlib=libc++"
+        "-DCMAKE_EXE_LINKER_FLAGS=-lc++abi"
+    )
+endif()
 
 set(
     CMAKE_MODULE_PATH
@@ -29,8 +40,9 @@ set(
 )
 include(TargetVersion)
 include(utils)
-
+include(sanitizers)
 set_install_rpath()
+handle_sanitizers()
 
 option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" OFF)
 

@@ -53,3 +53,18 @@ function(install_target target public_headers)
         DESTINATION include/${target}
     )
 endfunction()
+
+function(EXTEND_env VALUES OUTPUT)
+    set(
+        _TMP_STR
+        ${${OUTPUT}}
+        ${VALUES}
+    )
+    join_list(_TMP_STR ":" _TMP_STR)
+    set (${OUTPUT} "${_TMP_STR}" PARENT_SCOPE)
+endfunction()
+
+function(join_list INPUT GLUE OUTPUT)
+    string (REPLACE ";" "${GLUE}" _TMP_STR "${${INPUT}}")
+    set (${OUTPUT} "${_TMP_STR}" PARENT_SCOPE)
+endfunction()
