@@ -45,9 +45,9 @@ function(install_target target public_headers)
     install(
         TARGETS ${target} EXPORT live555Target
         INCLUDES DESTINATION include/${target}
-        RUNTIME DESTINATION bin/$<CONFIG>
-        LIBRARY DESTINATION lib/$<CONFIG>
-        ARCHIVE DESTINATION lib/$<CONFIG>
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
     )
     install(FILES ${public_headers}
         DESTINATION include/${target}

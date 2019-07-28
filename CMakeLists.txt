@@ -13,6 +13,7 @@ project(Live555
     VERSION ${project_version}
 )
 message(STATUS "Live555 version: ${project_version}")
+set(CMAKE_DEBUG_POSTFIX "-dbg")
 set(
     live555_SOURCE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -41,6 +42,14 @@ set(
 include(TargetVersion)
 include(utils)
 include(sanitizers)
+is_debug_build(IS_DEBUG)
+if (IS_DEBUG)
+    set(
+        CMAKE_EXECUTABLE_SUFFIX
+        "-dbg"
+    )
+endif()
+
 set_install_rpath()
 handle_sanitizers()
 

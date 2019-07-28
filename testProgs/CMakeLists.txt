@@ -1,11 +1,4 @@
 function(live555_add_test_executable _target)
-    is_debug_build(IS_DEBUG)
-    if (IS_DEBUG)
-        set(
-            _target
-            "${_target}-debug"
-        )
-    endif()
     add_executable(${_target} ${ARGN})
     target_link_libraries(${_target} PRIVATE
         live555_cxx_flags
