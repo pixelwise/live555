@@ -27,7 +27,7 @@ endfunction()
 macro(set_install_rpath)
     set(
         _RPATH
-        "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_BUILD_TYPE}"
+        "${CMAKE_INSTALL_PREFIX}/lib"
     )
     SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     # the RPATH to be used when installing, but only if it's not a system directory
