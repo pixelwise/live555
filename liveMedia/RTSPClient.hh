@@ -43,6 +43,7 @@ public:
 			       char const* applicationName = NULL,
 			       portNumBits tunnelOverHTTPPortNum = 0,
 			       int socketNumToServer = -1);
+  virtual ~RTSPClient();
   // If "tunnelOverHTTPPortNum" is non-zero, we tunnel RTSP (and RTP)
   //     over a HTTP connection with the given port number, using the technique
   //     described in Apple's document <http://developer.apple.com/documentation/QuickTime/QTSS/Concepts/chapter_2_section_14.html>
@@ -234,7 +235,6 @@ protected:
   RTSPClient(UsageEnvironment& env, char const* rtspURL,
 	     int verbosityLevel, char const* applicationName, portNumBits tunnelOverHTTPPortNum, int socketNumToServer);
       // called only by createNew();
-  virtual ~RTSPClient();
 
   void reset();
   void setBaseURL(char const* url);
