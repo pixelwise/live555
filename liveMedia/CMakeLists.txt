@@ -1,6 +1,5 @@
 find_all_headers_and_sources()
-add_library(liveMedia
-    SHARED
+add_library(liveMedia STATIC
     ${_public_headers}
     ${_private_headers}
     ${_all_srcs}

@@ -13,7 +13,11 @@ macro(find_all_headers_and_sources)
         "*.h"
         "*.hpp"
     )
-    aux_source_directory("${CMAKE_CURRENT_SOURCE_DIR}" _all_srcs)
+    file(
+        GLOB _all_srcs
+        "*.cpp"
+        "*.c"
+    )
 endmacro()
 
 function(is_debug_build out)

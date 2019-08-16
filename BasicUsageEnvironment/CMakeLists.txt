@@ -1,6 +1,5 @@
 find_all_headers_and_sources()
-add_library(BasicUsageEnvironment
-    SHARED
+add_library(BasicUsageEnvironment STATIC
     ${_public_headers}
     ${_private_headers}
     ${_all_srcs}
