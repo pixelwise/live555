@@ -11,7 +11,7 @@ target_include_directories(groupsock
 target_link_libraries(groupsock
     PUBLIC
     live555_cxx_flags
-    UsageEnvironment
+    BasicUsageEnvironment
 )
 if(WIN32)
     target_link_libraries(groupsock
