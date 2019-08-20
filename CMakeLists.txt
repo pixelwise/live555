@@ -7,7 +7,12 @@ set(project_version ${CMAKE_MATCH_1})
 if(NOT DEFINED PROJECT_NAME)
     set(master_project TRUE)
 endif()
-
+if(NOT BUILD_LIB_TYPE)
+    set(
+        BUILD_LIB_TYPE
+        STATIC
+    )
+endif()
 project(Live555
     LANGUAGES C CXX 
     VERSION ${project_version}
