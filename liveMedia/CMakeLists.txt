@@ -1,5 +1,5 @@
 find_all_headers_and_sources()
-add_library(liveMedia STATIC
+add_library(liveMedia ${BUILD_LIB_TYPE}
     ${_public_headers}
     ${_private_headers}
     ${_all_srcs}
@@ -11,7 +11,6 @@ target_include_directories(liveMedia
 target_link_libraries(liveMedia PUBLIC
     live555_cxx_flags
     groupsock
-    UsageEnvironment
 )
 
 live555_target_version(liveMedia AUTO)

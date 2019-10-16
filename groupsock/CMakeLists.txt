@@ -1,5 +1,5 @@
 find_all_headers_and_sources()
-add_library(groupsock STATIC
+add_library(groupsock ${BUILD_LIB_TYPE}
     ${_public_headers}
     ${_private_headers}
     ${_all_srcs}
@@ -11,7 +11,7 @@ target_include_directories(groupsock
 target_link_libraries(groupsock
     PUBLIC
     live555_cxx_flags
-    UsageEnvironment
+    BasicUsageEnvironment
 )
 if(WIN32)
     target_link_libraries(groupsock

@@ -1,5 +1,5 @@
 find_all_headers_and_sources()
-add_library(BasicUsageEnvironment STATIC
+add_library(BasicUsageEnvironment ${BUILD_LIB_TYPE}
     ${_public_headers}
     ${_private_headers}
     ${_all_srcs}
