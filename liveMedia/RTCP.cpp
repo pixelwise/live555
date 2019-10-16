@@ -26,6 +26,8 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #endif
 #define HACK_FOR_CHROME_WEBRTC_BUG 1 //#####@@@@@
 
+#undef DEBUG
+
 ////////// RTCPMemberDatabase //////////
 
 class RTCPMemberDatabase {
