@@ -554,7 +554,7 @@ void RTCPInstance
       Boolean subPacketOK = False;
       switch (pt) {
         case RTCP_PT_SR: {
-#if 1 //def DEBUG
+#ifdef DEBUG
           fprintf(stderr, "=================\nSR\n===============\n");
 #endif
           if (length < 20) break; length -= 20;
