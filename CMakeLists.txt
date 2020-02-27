@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 # Parse version number from the header file
-file(READ ${CMAKE_CURRENT_SOURCE_DIR}/liveMedia/include/liveMedia_version.hh contents)
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/liveMedia/liveMedia_version.hh contents)
 string(REGEX MATCH "define LIVEMEDIA_LIBRARY_VERSION_STRING	\"([0-9\.]+)\"" _ ${contents})
 set(project_version ${CMAKE_MATCH_1})
 if(NOT DEFINED PROJECT_NAME)

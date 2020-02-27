@@ -6,7 +6,7 @@ add_library(liveMedia ${BUILD_LIB_TYPE}
 )
 add_library(Live555::liveMedia ALIAS liveMedia)
 target_include_directories(liveMedia
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 target_link_libraries(liveMedia PUBLIC
     live555_cxx_flags

@@ -7,6 +7,8 @@
 class RTPReceptionStats
 {
 public:
+  RTPReceptionStats(uint32_t SSRC, uint16_t initialSeqNum);
+  RTPReceptionStats(uint32_t SSRC);
   uint32_t SSRC() const { return fSSRC; }
   unsigned numPacketsReceivedSinceLastReset() const {
     return fNumPacketsReceivedSinceLastReset;
@@ -33,15 +35,12 @@ public:
   struct timeval const& lastReceivedSR_time() const {
     return fLastReceivedSR_time;
   }
-
   unsigned minInterPacketGapUS() const { return fMinInterPacketGapUS; }
   unsigned maxInterPacketGapUS() const { return fMaxInterPacketGapUS; }
   struct timeval const& totalInterPacketGaps() const {
     return fTotalInterPacketGaps;
   }
 
-  RTPReceptionStats(uint32_t SSRC, uint16_t initialSeqNum);
-  RTPReceptionStats(uint32_t SSRC);
   virtual ~RTPReceptionStats();
   void noteIncomingPacket(
     uint16_t seqNum, uint32_t rtpTimestamp,
@@ -51,11 +50,13 @@ public:
     bool& resultHasBeenSyncedUsingRTCP,
     unsigned packetSize /* payload only */
   );
-  void noteIncomingSR(uint32_t ntpTimestampMSW, uint32_t ntpTimestampLSW,
-          uint32_t rtpTimestamp);
+  void noteIncomingSR(
+    uint32_t ntpTimestampMSW,
+    uint32_t ntpTimestampLSW,
+    uint32_t rtpTimestamp
+  );
   void init(uint32_t SSRC);
   void initSeqNum(u_int16_t initialSeqNum);
-  //// resets periodic stats (called after each reception report)
   void reset();
 
 private:
@@ -82,3 +83,5 @@ private:
   uint32_t fSyncTimestamp;
   struct timeval fSyncTime;
 };
+
+bool seqNumLT(u_int16_t s1, u_int16_t s2);

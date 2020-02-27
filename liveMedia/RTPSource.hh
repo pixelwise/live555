@@ -172,7 +172,4 @@ private:
 };
 
 
-Boolean seqNumLT(u_int16_t s1, u_int16_t s2);
-  // a 'less-than' on 16-bit sequence numbers
-
 #endif
