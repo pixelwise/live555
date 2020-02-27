@@ -21,6 +21,8 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #include "RTPSource.hh"
 #include "GroupsockHelper.hh"
 
+#define DISABLE_SR_SYNC 1
+
 ////////// RTPSource //////////
 
 Boolean RTPSource::lookupByName(UsageEnvironment& env,
@@ -213,7 +215,11 @@ void RTPReceptionStats::init(u_int32_t SSRC) {
   fMinInterPacketGapUS = 0x7FFFFFFF;
   fMaxInterPacketGapUS = 0;
   fTotalInterPacketGaps.tv_sec = fTotalInterPacketGaps.tv_usec = 0;
+#if DISABLE_SR_SYNC
+  fHasBeenSynchronized = True;
+#else
   fHasBeenSynchronized = False;
+#endif
   fSyncTime.tv_sec = fSyncTime.tv_usec = 0;
   reset();
 }
@@ -375,10 +381,12 @@ void RTPReceptionStats::noteIncomingSR(u_int32_t ntpTimestampMSW,
   gettimeofday(&fLastReceivedSR_time, NULL);
 
   // Use this SR to update time synchronization information:
-  fSyncTimestamp = rtpTimestamp;
-  fSyncTime.tv_sec = ntpTimestampMSW - 0x83AA7E80; // 1/1/1900 -> 1/1/1970
-  double microseconds = (ntpTimestampLSW*15625.0)/0x04000000; // 10^6/2^32
-  fSyncTime.tv_usec = (unsigned)(microseconds+0.5);
+  #if !DISABLE_SR_SYNC
+      fSyncTimestamp = rtpTimestamp;
+      fSyncTime.tv_sec = ntpTimestampMSW - 0x83AA7E80; // 1/1/1900 -> 1/1/1970
+      double microseconds = (ntpTimestampLSW*15625.0)/0x04000000; // 10^6/2^32
+      fSyncTime.tv_usec = (unsigned)(microseconds+0.5);
+  #endif
   fHasBeenSynchronized = True;
 }
 

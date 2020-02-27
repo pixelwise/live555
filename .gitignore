@@ -1,3 +1,7 @@
 *.o
 \#*\#
 /BasicUsageEnvironment/.DS_Store
+cmake-build*
+.idea
+*.orig
+local_build_tools
