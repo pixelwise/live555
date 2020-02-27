@@ -55,12 +55,80 @@ void RTPReceptionStats::initSeqNum(uint16_t initialSeqNum)
     fHaveSeenInitialSequenceNumber = true;
 }
 
-void RTPReceptionStats::noteIncomingPacket(uint16_t seqNum, uint32_t rtpTimestamp,
-         unsigned timestampFrequency,
-         bool useForJitterCalculation,
-         struct timeval& resultPresentationTime,
-         bool& resultHasBeenSyncedUsingRTCP,
-         unsigned packetSize) {
+uint32_t RTPReceptionStats::SSRC() const
+{
+  return fSSRC;
+}
+
+unsigned RTPReceptionStats::numPacketsReceivedSinceLastReset() const
+{
+  return fNumPacketsReceivedSinceLastReset;
+}
+
+unsigned RTPReceptionStats::totNumPacketsReceived() const
+{
+  return fTotNumPacketsReceived;
+}
+
+unsigned RTPReceptionStats::totNumPacketsExpected() const
+{
+  return (fHighestExtSeqNumReceived - fBaseExtSeqNumReceived) + 1;
+}
+
+unsigned RTPReceptionStats::baseExtSeqNumReceived() const
+{
+  return fBaseExtSeqNumReceived;
+}
+
+unsigned RTPReceptionStats::lastResetExtSeqNumReceived() const
+{
+  return fLastResetExtSeqNumReceived;
+}
+
+unsigned RTPReceptionStats::highestExtSeqNumReceived() const
+{
+  return fHighestExtSeqNumReceived;
+}
+
+unsigned RTPReceptionStats::lastReceivedSR_NTPmsw() const
+{
+  return fLastReceivedSR_NTPmsw;
+}
+
+unsigned RTPReceptionStats::lastReceivedSR_NTPlsw() const
+{
+  return fLastReceivedSR_NTPlsw;
+}
+
+struct timeval const& RTPReceptionStats::lastReceivedSR_time() const
+{
+  return fLastReceivedSR_time;
+}
+
+unsigned RTPReceptionStats::minInterPacketGapUS() const
+{
+  return fMinInterPacketGapUS;
+}
+
+unsigned RTPReceptionStats::maxInterPacketGapUS() const
+{
+  return fMaxInterPacketGapUS;
+}
+
+struct timeval const& RTPReceptionStats::totalInterPacketGaps() const
+{
+  return fTotalInterPacketGaps;
+}
+
+void RTPReceptionStats::noteIncomingPacket(
+  uint16_t seqNum, uint32_t rtpTimestamp,
+  unsigned timestampFrequency,
+  bool useForJitterCalculation,
+  struct timeval& resultPresentationTime,
+  bool& resultHasBeenSyncedUsingRTCP,
+  unsigned packetSize
+)
+{
   if (!fHaveSeenInitialSequenceNumber) initSeqNum(seqNum);
 
   ++fNumPacketsReceivedSinceLastReset;

@@ -9,38 +9,21 @@ class RTPReceptionStats
 public:
   RTPReceptionStats(uint32_t SSRC, uint16_t initialSeqNum);
   RTPReceptionStats(uint32_t SSRC);
-  uint32_t SSRC() const { return fSSRC; }
-  unsigned numPacketsReceivedSinceLastReset() const {
-    return fNumPacketsReceivedSinceLastReset;
-  }
-  unsigned totNumPacketsReceived() const { return fTotNumPacketsReceived; }
+  uint32_t SSRC() const;
+  unsigned numPacketsReceivedSinceLastReset() const;
+  unsigned totNumPacketsReceived() const;
   double totNumKBytesReceived() const;
-
-  unsigned totNumPacketsExpected() const {
-    return (fHighestExtSeqNumReceived - fBaseExtSeqNumReceived) + 1;
-  }
-
-  unsigned baseExtSeqNumReceived() const { return fBaseExtSeqNumReceived; }
-  unsigned lastResetExtSeqNumReceived() const {
-    return fLastResetExtSeqNumReceived;
-  }
-  unsigned highestExtSeqNumReceived() const {
-    return fHighestExtSeqNumReceived;
-  }
-
+  unsigned totNumPacketsExpected() const;
+  unsigned baseExtSeqNumReceived() const;
+  unsigned lastResetExtSeqNumReceived() const;
+  unsigned highestExtSeqNumReceived() const;
   unsigned jitter() const;
-
-  unsigned lastReceivedSR_NTPmsw() const { return fLastReceivedSR_NTPmsw; }
-  unsigned lastReceivedSR_NTPlsw() const { return fLastReceivedSR_NTPlsw; }
-  struct timeval const& lastReceivedSR_time() const {
-    return fLastReceivedSR_time;
-  }
-  unsigned minInterPacketGapUS() const { return fMinInterPacketGapUS; }
-  unsigned maxInterPacketGapUS() const { return fMaxInterPacketGapUS; }
-  struct timeval const& totalInterPacketGaps() const {
-    return fTotalInterPacketGaps;
-  }
-
+  unsigned lastReceivedSR_NTPmsw() const;
+  unsigned lastReceivedSR_NTPlsw() const;
+  struct timeval const& lastReceivedSR_time() const;
+  unsigned minInterPacketGapUS() const;
+  unsigned maxInterPacketGapUS() const;
+  struct timeval const& totalInterPacketGaps() const;
   virtual ~RTPReceptionStats();
   void noteIncomingPacket(
     uint16_t seqNum, uint32_t rtpTimestamp,
