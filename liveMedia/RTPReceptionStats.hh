@@ -2,6 +2,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <sys/time.h>
 
 class RTPReceptionStats
@@ -10,28 +11,29 @@ public:
   RTPReceptionStats(uint32_t SSRC, uint16_t initialSeqNum);
   RTPReceptionStats(uint32_t SSRC);
   uint32_t SSRC() const;
-  unsigned numPacketsReceivedSinceLastReset() const;
-  unsigned totNumPacketsReceived() const;
+  size_t numPacketsReceivedSinceLastReset() const;
+  size_t totNumPacketsReceived() const;
   double totNumKBytesReceived() const;
-  unsigned totNumPacketsExpected() const;
-  unsigned baseExtSeqNumReceived() const;
-  unsigned lastResetExtSeqNumReceived() const;
-  unsigned highestExtSeqNumReceived() const;
-  unsigned jitter() const;
-  unsigned lastReceivedSR_NTPmsw() const;
-  unsigned lastReceivedSR_NTPlsw() const;
+  size_t totNumPacketsExpected() const;
+  size_t baseExtSeqNumReceived() const;
+  size_t lastResetExtSeqNumReceived() const;
+  size_t highestExtSeqNumReceived() const;
+  double jitter() const;
+  size_t lastReceivedSR_NTPmsw() const;
+  size_t lastReceivedSR_NTPlsw() const;
   struct timeval const& lastReceivedSR_time() const;
-  unsigned minInterPacketGapUS() const;
-  unsigned maxInterPacketGapUS() const;
+  size_t minInterPacketGapUS() const;
+  size_t maxInterPacketGapUS() const;
   struct timeval const& totalInterPacketGaps() const;
   virtual ~RTPReceptionStats();
   void noteIncomingPacket(
-    uint16_t seqNum, uint32_t rtpTimestamp,
-    unsigned timestampFrequency,
+    uint16_t sequence_number,
+    uint32_t rtpTimestamp,
+    size_t timestampFrequency,
     bool useForJitterCalculation,
     struct timeval& resultPresentationTime,
     bool& resultHasBeenSyncedUsingRTCP,
-    unsigned packetSize /* payload only */
+    size_t packetSize /* payload only */
   );
   void noteIncomingSR(
     uint32_t ntpTimestampMSW,
@@ -43,23 +45,33 @@ public:
   void reset();
 
 private:
+
+  void consume_packet_size(size_t sequence_number);
+  void consume_sequence_number(uint16_t sequence_number);
+  void consume_packet_reception_time(struct timeval timeNow);
+  void update_jitter_estimate(
+    uint32_t rtpTimestamp,
+    size_t timestampFrequency,
+    struct timeval timeNow
+  );
+
   uint32_t fSSRC;
-  unsigned fNumPacketsReceivedSinceLastReset;
-  unsigned fTotNumPacketsReceived;
-  uint32_t fTotBytesReceived_hi, fTotBytesReceived_lo;
+  size_t fNumPacketsReceivedSinceLastReset;
+  size_t fTotNumPacketsReceived;
+  size_t fTotBytesReceived;
   bool fHaveSeenInitialSequenceNumber;
-  unsigned fBaseExtSeqNumReceived;
-  unsigned fLastResetExtSeqNumReceived;
-  unsigned fHighestExtSeqNumReceived;
-  int fLastTransit; // used in the jitter calculation
+  size_t fBaseExtSeqNumReceived;
+  size_t fLastResetExtSeqNumReceived;
+  size_t fHighestExtSeqNumReceived;
+  std::optional<int> fLastTransit; // used in the jitter calculation
   uint32_t fPreviousPacketRTPTimestamp;
   double fJitter;
   // The following are recorded whenever we receive a RTCP SR for this SSRC:
-  unsigned fLastReceivedSR_NTPmsw; // NTP timestamp (from SR), most-signif
-  unsigned fLastReceivedSR_NTPlsw; // NTP timestamp (from SR), least-signif
+  size_t fLastReceivedSR_NTPmsw; // NTP timestamp (from SR), most-signif
+  size_t fLastReceivedSR_NTPlsw; // NTP timestamp (from SR), least-signif
   struct timeval fLastReceivedSR_time;
   struct timeval fLastPacketReceptionTime;
-  unsigned fMinInterPacketGapUS, fMaxInterPacketGapUS;
+  size_t fMinInterPacketGapUS, fMaxInterPacketGapUS;
   struct timeval fTotalInterPacketGaps;
   // Used to convert from RTP timestamp to 'wall clock' time:
   bool fHasBeenSynchronized;
