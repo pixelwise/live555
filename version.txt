@@ -1,0 +1,20 @@
+# 'CURRENT':'REVISION':'AGE' are updated - whenever a library changes - as follows:
+# The library code changes, but without any changes to the API (i.e., interfaces) => increment REVISION
+# At least one interface changes, or is removed => CURRENT += 1; REVISION = 0; AGE = 0
+# One or more interfaces were added, but no existing interfaces were changed or removed => CURRENT += 1; REVISION = 0; AGE += 1
+
+libliveMedia_VERSION_CURRENT=64
+libliveMedia_VERSION_REVISION=2
+libliveMedia_VERSION_AGE=0
+
+libBasicUsageEnvironment_VERSION_CURRENT=1
+libBasicUsageEnvironment_VERSION_REVISION=1
+libBasicUsageEnvironment_VERSION_AGE=0
+
+libUsageEnvironment_VERSION_CURRENT=4
+libUsageEnvironment_VERSION_REVISION=0
+libUsageEnvironment_VERSION_AGE=1
+
+libgroupsock_VERSION_CURRENT=10
+libgroupsock_VERSION_REVISION=1
+libgroupsock_VERSION_AGE=2
