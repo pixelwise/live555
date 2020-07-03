@@ -40,12 +40,11 @@ public:
     uint32_t ntpTimestampLSW,
     uint32_t rtpTimestamp
   );
-  void init(uint32_t SSRC);
-  void initSeqNum(u_int16_t initialSeqNum);
   void reset();
 
 private:
 
+  void init(uint32_t SSRC);
   void consume_packet_size(size_t sequence_number);
   void consume_sequence_number(uint16_t sequence_number);
   void consume_packet_reception_time(struct timeval timeNow);
@@ -56,10 +55,10 @@ private:
   );
 
   uint32_t fSSRC;
+  std::optional<uint16_t> _last_rtp_sequence_number;
   size_t fNumPacketsReceivedSinceLastReset;
   size_t fTotNumPacketsReceived;
   size_t fTotBytesReceived;
-  bool fHaveSeenInitialSequenceNumber;
   size_t fBaseExtSeqNumReceived;
   size_t fLastResetExtSeqNumReceived;
   size_t fHighestExtSeqNumReceived;

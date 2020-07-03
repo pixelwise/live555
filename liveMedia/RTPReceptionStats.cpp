@@ -12,7 +12,7 @@ RTPReceptionStats::RTPReceptionStats(
   uint16_t initialSeqNum
 )
 {
-  initSeqNum(initialSeqNum);
+  _last_rtp_sequence_number = initialSeqNum;
   init(SSRC);
 }
 
@@ -32,8 +32,6 @@ void RTPReceptionStats::init(uint32_t SSRC)
   fTotBytesReceived = 0;
   fBaseExtSeqNumReceived = 0;
   fHighestExtSeqNumReceived = 0;
-  fHaveSeenInitialSequenceNumber = false;
-  fLastTransit = std::nullopt;
   fPreviousPacketRTPTimestamp = 0;
   fJitter = 0.0;
   fLastReceivedSR_NTPmsw = fLastReceivedSR_NTPlsw = 0;
@@ -49,13 +47,6 @@ void RTPReceptionStats::init(uint32_t SSRC)
 #endif
   fSyncTime.tv_sec = fSyncTime.tv_usec = 0;
   reset();
-}
-
-void RTPReceptionStats::initSeqNum(uint16_t initialSeqNum)
-{
-    fBaseExtSeqNumReceived = 0x10000 | initialSeqNum;
-    fHighestExtSeqNumReceived = 0x10000 | initialSeqNum;
-    fHaveSeenInitialSequenceNumber = true;
 }
 
 uint32_t RTPReceptionStats::SSRC() const
@@ -199,22 +190,15 @@ void RTPReceptionStats::consume_packet_size(size_t packet_size)
 
 void RTPReceptionStats::consume_sequence_number(uint16_t sequence_number)
 {
-  if (!fHaveSeenInitialSequenceNumber)
-      initSeqNum(sequence_number);
-  size_t oldSeqNum = (fHighestExtSeqNumReceived&0xFFFF);
-  size_t seqNumCycle = (fHighestExtSeqNumReceived&0xFFFF0000);
-  size_t seqNumDifference = (size_t)((int)sequence_number-(int)oldSeqNum);
-  bool wrapped_around = (seqNumDifference >= 0x8000);
-  if (wrapped_around)
+  if (_last_rtp_sequence_number)
   {
-    if (seqNumLT((uint16_t)oldSeqNum, sequence_number))
-      seqNumCycle += 0x10000;
-    else if (fTotNumPacketsReceived > 1)
-      seqNumCycle -= 0x10000;
+    size_t delta =
+      (sequence_number > *_last_rtp_sequence_number) ?
+      size_t(sequence_number - *_last_rtp_sequence_number) :
+      (size_t(sequence_number) + size_t(65536) - size_t(*_last_rtp_sequence_number));
+    fHighestExtSeqNumReceived += delta;
   }
-  size_t newSeqNum = seqNumCycle | sequence_number;
-  fBaseExtSeqNumReceived = std::min(fBaseExtSeqNumReceived, newSeqNum);
-  fHighestExtSeqNumReceived = std::max(fHighestExtSeqNumReceived, newSeqNum);
+  _last_rtp_sequence_number = sequence_number;
 }
 
 void RTPReceptionStats::consume_packet_reception_time(struct timeval timeNow)
