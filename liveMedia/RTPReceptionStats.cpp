@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 #ifndef MILLION
 #define MILLION 1000000
@@ -197,6 +198,10 @@ void RTPReceptionStats::consume_sequence_number(uint16_t sequence_number)
       size_t(sequence_number - *_last_rtp_sequence_number) :
       (size_t(sequence_number) + size_t(65536) - size_t(*_last_rtp_sequence_number));
     fHighestExtSeqNumReceived += delta;
+    if (delta > 100)
+    {
+      std::cerr << "rtp warning: large sequence number jump: " << delta << std::endl;
+    }
   }
   _last_rtp_sequence_number = sequence_number;
 }
