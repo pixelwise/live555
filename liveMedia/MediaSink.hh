@@ -27,9 +27,6 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 class MediaSink: public Medium {
 public:
-  static Boolean lookupByName(UsageEnvironment& env, char const* sinkName,
-			      MediaSink*& resultSink);
-
   typedef void (afterPlayingFunc)(void* clientData);
   Boolean startPlaying(MediaSource& source,
 		       afterPlayingFunc* afterFunc,

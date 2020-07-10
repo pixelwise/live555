@@ -25,23 +25,6 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 ////////// RTPSource //////////
 
-Boolean RTPSource::lookupByName(UsageEnvironment& env,
-				char const* sourceName,
-				RTPSource*& resultSource) {
-  resultSource = NULL; // unless we succeed
-
-  MediaSource* source;
-  if (!MediaSource::lookupByName(env, sourceName, source)) return False;
-
-  if (!source->isRTPSource()) {
-    env.setResultMsg(sourceName, " is not a RTP source");
-    return False;
-  }
-
-  resultSource = (RTPSource*)source;
-  return True;
-}
-
 Boolean RTPSource::hasBeenSynchronizedUsingRTCP() {
   return fCurPacketHasBeenSynchronizedUsingRTCP;
 }

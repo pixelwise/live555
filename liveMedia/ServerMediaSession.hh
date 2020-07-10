@@ -39,10 +39,6 @@ public:
 				       Boolean isSSM = False,
 				       char const* miscSDPLines = NULL);
 
-  static Boolean lookupByName(UsageEnvironment& env,
-                              char const* mediumName,
-                              ServerMediaSession*& resultSession);
-
   char* generateSDPDescription(); // based on the entire session
       // Note: The caller is responsible for freeing the returned string
 

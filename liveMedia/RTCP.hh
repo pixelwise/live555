@@ -54,9 +54,6 @@ public:
 				 RTPSource* source,
 				 Boolean isSSMSource = False);
 
-  static Boolean lookupByName(UsageEnvironment& env, char const* instanceName,
-                              RTCPInstance*& resultInstance);
-
   unsigned numMembers() const;
   unsigned totSessionBW() const { return fTotSessionBW; }
 
@@ -98,10 +95,10 @@ public:
 
   Groupsock* RTCPgs() const { return fRTCPInterface.gs(); }
 
-  void setStreamSocket(int sockNum, unsigned char streamChannelId);
-  void addStreamSocket(int sockNum, unsigned char streamChannelId);
-  void removeStreamSocket(int sockNum, unsigned char streamChannelId) {
-    fRTCPInterface.removeStreamSocket(sockNum, streamChannelId);
+  void setStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId);
+  void addStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId);
+  void removeStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId) {
+    fRTCPInterface.removeStreamSocket(socketDescriptor, streamChannelId);
   }
     // hacks to allow sending RTP over TCP (RFC 2236, section 10.12)
 

@@ -170,9 +170,5 @@ Boolean MP3FileSource::initializeStream() {
   fHaveJustInitialized = True;
   fLimitNumBytesToStream = False;
   fNumBytesToStream = 0;
-
-  // Hack: It's possible that our environment's 'result message' has been
-  // reset within this function, so set it again to our name now:
-  envir().setResultMsg(name());
   return True;
 }

@@ -168,10 +168,6 @@ public:
 
   int socketNum() const { return fInputSocketNum; }
 
-  static Boolean lookupByName(UsageEnvironment& env,
-			      char const* sourceName,
-			      RTSPClient*& resultClient);
-
   static Boolean parseRTSPURL(UsageEnvironment& env, char const* url,
 			      char*& username, char*& password, NetAddress& address, portNumBits& portNum, char const** urlSuffix = NULL);
       // Parses "url" as "rtsp://[<username>[:<password>]@]<server-address-or-name>[:<port>][/<stream-name>]"
@@ -238,7 +234,6 @@ protected:
 
   void reset();
   void setBaseURL(char const* url);
-  int grabSocket(); // allows a subclass to reuse our input socket, so that it won't get closed when we're deleted
   virtual unsigned sendRequest(RequestRecord* request);
   virtual Boolean setRequestFields(RequestRecord* request,
 				   char*& cmdURL, Boolean& cmdURLWasAllocated,
@@ -333,6 +328,7 @@ private:
   char* fUserAgentHeaderStr;
   unsigned fUserAgentHeaderStrLen;
   int fInputSocketNum, fOutputSocketNum;
+  SocketDescriptor* fInputSocketDescriptor;
   char* fBaseURL;
   unsigned char fTCPStreamIdCount; // used for (optional) RTP/TCP
   char* fLastSessionId;

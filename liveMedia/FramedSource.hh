@@ -30,9 +30,6 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 class FramedSource: public MediaSource {
 public:
-  static Boolean lookupByName(UsageEnvironment& env, char const* sourceName,
-			      FramedSource*& resultSource);
-
   typedef void (afterGettingFunc)(void* clientData, unsigned frameSize,
 				  unsigned numTruncatedBytes,
 				  struct timeval presentationTime,

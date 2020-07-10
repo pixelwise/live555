@@ -49,20 +49,6 @@ MP3ADUinterleaverBase::MP3ADUinterleaverBase(UsageEnvironment& env,
 MP3ADUinterleaverBase::~MP3ADUinterleaverBase() {
 }
 
-FramedSource* MP3ADUinterleaverBase::getInputSource(UsageEnvironment& env,
-						    char const* inputSourceName) {
-  FramedSource* inputSource;
-  if (!FramedSource::lookupByName(env, inputSourceName, inputSource))
-    return NULL;
-
-  if (strcmp(inputSource->MIMEtype(), "audio/MPA-ROBUST") != 0) {
-    env.setResultMsg(inputSourceName, " is not an MP3 ADU source");
-    return NULL;
-  }
-
-  return inputSource;
-}
-
 void MP3ADUinterleaverBase::afterGettingFrame(void* clientData,
 					      unsigned numBytesRead,
 					      unsigned /*numTruncatedBytes*/,

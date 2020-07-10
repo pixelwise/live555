@@ -40,9 +40,6 @@ public:
       //     torn down) if no RTSP commands - or RTCP "RR" packets - from the
       //     client are received in at least "reclamationSeconds" seconds.
 
-  static Boolean lookupByName(UsageEnvironment& env, char const* name,
-			      RTSPServer*& resultServer);
-
   typedef void (responseHandlerForREGISTER)(RTSPServer* rtspServer, unsigned requestId, int resultCode, char* resultString);
   unsigned registerStream(ServerMediaSession* serverMediaSession,
 			  char const* remoteClientNameOrAddress, portNumBits remoteClientPortNum,

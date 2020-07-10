@@ -253,23 +253,6 @@ RTCPInstance* RTCPInstance::createNew(UsageEnvironment& env, Groupsock* RTCPgs,
                           isSSMSource);
 }
 
-Boolean RTCPInstance::lookupByName(UsageEnvironment& env,
-                                   char const* instanceName,
-                                   RTCPInstance*& resultInstance) {
-  resultInstance = NULL; // unless we succeed
-
-  Medium* medium;
-  if (!Medium::lookupByName(env, instanceName, medium)) return False;
-
-  if (!medium->isRTCPInstance()) {
-    env.setResultMsg(instanceName, " is not a RTCP instance");
-    return False;
-  }
-
-  resultInstance = (RTCPInstance*)medium;
-  return True;
-}
-
 Boolean RTCPInstance::isRTCPInstance() const {
   return True;
 }
@@ -368,13 +351,16 @@ void RTCPInstance::sendAppPacket(u_int8_t subtype, char const* name,
   sendBuiltPacket();
 }
 
-void RTCPInstance::setStreamSocket(int sockNum,
-                                   unsigned char streamChannelId) {
+void RTCPInstance::setStreamSocket(
+  SocketDescriptor* socketDescriptor,
+  unsigned char streamChannelId
+) 
+{
   // Turn off background read handling:
   fRTCPInterface.stopNetworkReading();
 
   // Switch to RTCP-over-TCP:
-  fRTCPInterface.setStreamSocket(sockNum, streamChannelId);
+  fRTCPInterface.setStreamSocket(socketDescriptor, streamChannelId);
 
   // Turn background reading back on:
   TaskScheduler::BackgroundHandlerProc* handler
@@ -382,13 +368,16 @@ void RTCPInstance::setStreamSocket(int sockNum,
   fRTCPInterface.startNetworkReading(handler);
 }
 
-void RTCPInstance::addStreamSocket(int sockNum,
-                                   unsigned char streamChannelId) {
+void RTCPInstance::addStreamSocket(
+  SocketDescriptor* socketDescriptor,
+  unsigned char streamChannelId
+)
+{
   // First, turn off background read handling for the default (UDP) socket:
   envir().taskScheduler().turnOffBackgroundReadHandling(fRTCPInterface.gs()->socketNum());
 
   // Add the RTCP-over-TCP interface:
-  fRTCPInterface.addStreamSocket(sockNum, streamChannelId);
+  fRTCPInterface.addStreamSocket(socketDescriptor, streamChannelId);
 
   // Turn on background reading for this socket (in case it's not on already):
   TaskScheduler::BackgroundHandlerProc* handler

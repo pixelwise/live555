@@ -62,9 +62,6 @@ public:
   static MediaSession* createNew(UsageEnvironment& env,
 				 char const* sdpDescription);
 
-  static Boolean lookupByName(UsageEnvironment& env, char const* sourceName,
-			      MediaSession*& resultSession);
-
   Boolean hasSubsessions() const { return fSubsessionsHead != NULL; }
 
   char* connectionEndpointName() const { return fConnectionEndpointName; }

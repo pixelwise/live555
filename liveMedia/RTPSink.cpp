@@ -23,22 +23,6 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 ////////// RTPSink //////////
 
-Boolean RTPSink::lookupByName(UsageEnvironment& env, char const* sinkName,
-				RTPSink*& resultSink) {
-  resultSink = NULL; // unless we succeed
-
-  MediaSink* sink;
-  if (!MediaSink::lookupByName(env, sinkName, sink)) return False;
-
-  if (!sink->isRTPSink()) {
-    env.setResultMsg(sinkName, " is not a RTP sink");
-    return False;
-  }
-
-  resultSink = (RTPSink*)sink;
-  return True;
-}
-
 Boolean RTPSink::isRTPSink() const {
   return True;
 }

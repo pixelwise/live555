@@ -36,22 +36,6 @@ Boolean MediaSink::isSink() const {
   return True;
 }
 
-Boolean MediaSink::lookupByName(UsageEnvironment& env, char const* sinkName,
-				MediaSink*& resultSink) {
-  resultSink = NULL; // unless we succeed
-
-  Medium* medium;
-  if (!Medium::lookupByName(env, sinkName, medium)) return False;
-
-  if (!medium->isSink()) {
-    env.setResultMsg(sinkName, " is not a media sink");
-    return False;
-  }
-
-  resultSink = (MediaSink*)medium;
-  return True;
-}
-
 Boolean MediaSink::sourceIsCompatibleWithUs(MediaSource& source) {
   // We currently support only framed sources.
   return source.isFramedSource();

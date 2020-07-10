@@ -32,9 +32,6 @@ class RTPTransmissionStatsDB; // forward
 
 class RTPSink: public MediaSink {
 public:
-  static Boolean lookupByName(UsageEnvironment& env, char const* sinkName,
-			      RTPSink*& resultSink);
-
   // used by RTSP servers:
   Groupsock const& groupsockBeingUsed() const { return *(fRTPInterface.gs()); }
   Groupsock& groupsockBeingUsed() { return *(fRTPInterface.gs()); }
@@ -75,14 +72,14 @@ public:
   void resetPresentationTimes();
 
   // Hacks to allow sending RTP over TCP (RFC 2236, section 10.12):
-  void setStreamSocket(int sockNum, unsigned char streamChannelId) {
-    fRTPInterface.setStreamSocket(sockNum, streamChannelId);
+  void setStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId) {
+    fRTPInterface.setStreamSocket(socketDescriptor, streamChannelId);
   }
-  void addStreamSocket(int sockNum, unsigned char streamChannelId) {
-    fRTPInterface.addStreamSocket(sockNum, streamChannelId);
+  void addStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId) {
+    fRTPInterface.addStreamSocket(socketDescriptor, streamChannelId);
   }
-  void removeStreamSocket(int sockNum, unsigned char streamChannelId) {
-    fRTPInterface.removeStreamSocket(sockNum, streamChannelId);
+  void removeStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId) {
+    fRTPInterface.removeStreamSocket(socketDescriptor, streamChannelId);
   }
   unsigned& estimatedBitrate() { return fEstimatedBitrate; } // kbps; usually 0 (i.e., unset)
 

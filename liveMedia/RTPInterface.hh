@@ -40,15 +40,55 @@ typedef void ServerRequestAlternativeByteHandler(void* instance, u_int8_t reques
 // the same TCP connection.  A RTSP server implementation would supply a function like this - as a parameter to
 // "ServerMediaSubsession::startStream()".
 
+class RTPInterface;
+
+class SocketDescriptor {
+public:
+  SocketDescriptor(UsageEnvironment& env, int socketNum);
+  ~SocketDescriptor();
+
+  void registerRTPInterface(
+    unsigned char streamChannelId,
+    RTPInterface* rtpInterface
+  );
+  RTPInterface* lookupRTPInterface(unsigned char streamChannelId);
+  void deregisterRTPInterface(unsigned char streamChannelId);
+
+  void setServerRequestAlternativeByteHandler(
+    ServerRequestAlternativeByteHandler* handler,
+    void* clientData
+  )
+  {
+    fServerRequestAlternativeByteHandler = handler;
+    fServerRequestAlternativeByteHandlerClientData = clientData;
+  }
+
+  int socketNum() {return fOurSocketNum;}
+
+private:
+
+  static void tcpReadHandler(SocketDescriptor*, int mask);
+  Boolean tcpReadHandler1(int mask);
+  UsageEnvironment& fEnv;
+  int fOurSocketNum;
+  HashTable* fSubChannelHashTable;
+  ServerRequestAlternativeByteHandler* fServerRequestAlternativeByteHandler;
+  void* fServerRequestAlternativeByteHandlerClientData;
+  u_int8_t fStreamChannelId, fSizeByte1;
+  Boolean fReadErrorOccurred, fDeleteMyselfNext, fAreInReadHandlerLoop;
+  enum { AWAITING_DOLLAR, AWAITING_STREAM_CHANNEL_ID, AWAITING_SIZE1, AWAITING_SIZE2, AWAITING_PACKET_DATA } fTCPReadingState;
+};
+
 class tcpStreamRecord {
 public:
-  tcpStreamRecord(int streamSocketNum, unsigned char streamChannelId,
-		  tcpStreamRecord* next);
-  virtual ~tcpStreamRecord();
-
-public:
+  tcpStreamRecord(
+    SocketDescriptor* socketDescriptor,
+    unsigned char streamChannelId,
+		tcpStreamRecord* next
+  );
+  ~tcpStreamRecord();
   tcpStreamRecord* fNext;
-  int fStreamSocketNum;
+  SocketDescriptor* fStreamSocketDescriptor;
   unsigned char fStreamChannelId;
 };
 
@@ -59,21 +99,22 @@ public:
 
   Groupsock* gs() const { return fGS; }
 
-  void setStreamSocket(int sockNum, unsigned char streamChannelId);
-  void addStreamSocket(int sockNum, unsigned char streamChannelId);
-  void removeStreamSocket(int sockNum, unsigned char streamChannelId);
-  static void setServerRequestAlternativeByteHandler(UsageEnvironment& env, int socketNum,
-						     ServerRequestAlternativeByteHandler* handler, void* clientData);
-  static void clearServerRequestAlternativeByteHandler(UsageEnvironment& env, int socketNum);
-
+  void setStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId);
+  void addStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId);
+  void removeStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId);
   Boolean sendPacket(unsigned char* packet, unsigned packetSize);
   void startNetworkReading(TaskScheduler::BackgroundHandlerProc*
                            handlerProc);
-  Boolean handleRead(unsigned char* buffer, unsigned bufferMaxSize,
-		     // out parameters:
-		     unsigned& bytesRead, struct sockaddr_in& fromAddress,
-		     int& tcpSocketNum, unsigned char& tcpStreamChannelId,
-		     Boolean& packetReadWasIncomplete);
+  Boolean handleRead(
+    unsigned char* buffer,
+    unsigned bufferMaxSize,
+		// out parameters:
+		unsigned& bytesRead,
+    struct sockaddr_in& fromAddress,
+		int& tcpSocketNum,
+    unsigned char& tcpStreamChannelId,
+		Boolean& packetReadWasIncomplete
+  );
   // Note: If "tcpSocketNum" < 0, then the packet was received over UDP, and "tcpStreamChannelId"
   //   is undefined (and irrelevant).
 
@@ -85,8 +126,11 @@ public:
 
   UsageEnvironment& envir() const { return fOwner->envir(); }
 
-  void setAuxilliaryReadHandler(AuxHandlerFunc* handlerFunc,
-				void* handlerClientData) {
+  void setAuxilliaryReadHandler(
+    AuxHandlerFunc* handlerFunc,
+		void* handlerClientData
+  )
+  {
     fAuxReadHandlerFunc = handlerFunc;
     fAuxReadHandlerClientData = handlerClientData;
   }
@@ -98,11 +142,19 @@ public:
 
 private:
   // Helper functions for sending a RTP or RTCP packet over a TCP connection:
-  Boolean sendRTPorRTCPPacketOverTCP(unsigned char* packet, unsigned packetSize,
-				     int socketNum, unsigned char streamChannelId);
-  Boolean sendDataOverTCP(int socketNum, u_int8_t const* data, unsigned dataSize, Boolean forceSendToSucceed);
+  Boolean sendRTPorRTCPPacketOverTCP(
+    unsigned char* packet,
+    unsigned packetSize,
+		SocketDescriptor* socketDescriptor,
+    unsigned char streamChannelId
+  );
+  Boolean sendDataOverTCP(
+    SocketDescriptor* socketDescriptor,
+    u_int8_t const* data,
+    unsigned dataSize,
+    Boolean forceSendToSucceed
+  );
 
-private:
   friend class SocketDescriptor;
   Medium* fOwner;
   Groupsock* fGS;

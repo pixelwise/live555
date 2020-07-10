@@ -133,7 +133,7 @@ ADUFromMP3Source* ADUFromMP3Source::createNew(UsageEnvironment& env,
                                               Boolean includeADUdescriptors) {
   // The source must be a MPEG audio source:
   if (strcmp(inputSource->MIMEtype(), "audio/MPEG") != 0) {
-    env.setResultMsg(inputSource->name(), " is not an MPEG audio source");
+    env.setResultMsg("not an MPEG audio source");
     return NULL;
   }
 
@@ -293,7 +293,7 @@ MP3FromADUSource* MP3FromADUSource::createNew(UsageEnvironment& env,
 					      Boolean includeADUdescriptors) {
   // The source must be an MP3 ADU source:
   if (strcmp(inputSource->MIMEtype(), "audio/MPA-ROBUST") != 0) {
-    env.setResultMsg(inputSource->name(), " is not an MP3 ADU source");
+    env.setResultMsg("not an MP3 ADU source");
     return NULL;
   }
 

@@ -36,23 +36,6 @@ RTSPServer::createNew(UsageEnvironment& env, Port ourPort,
   return new RTSPServer(env, ourSocket, ourPort, authDatabase, reclamationSeconds);
 }
 
-Boolean RTSPServer::lookupByName(UsageEnvironment& env,
-				 char const* name,
-				 RTSPServer*& resultServer) {
-  resultServer = NULL; // unless we succeed
-  
-  Medium* medium;
-  if (!Medium::lookupByName(env, name, medium)) return False;
-  
-  if (!medium->isRTSPServer()) {
-    env.setResultMsg(name, " is not a RTSP server");
-    return False;
-  }
-  
-  resultServer = (RTSPServer*)medium;
-  return True;
-}
-
 char* RTSPServer
 ::rtspURL(ServerMediaSession const* serverMediaSession, int clientSocket) const {
   char* urlPrefix = rtspURLPrefix(clientSocket);

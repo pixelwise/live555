@@ -29,9 +29,6 @@ class RTPReceptionStatsDB; // forward
 
 class RTPSource: public FramedSource {
 public:
-  static Boolean lookupByName(UsageEnvironment& env, char const* sourceName,
-            RTPSource*& resultSource);
-
   Boolean curPacketMarkerBit() const { return fCurPacketMarkerBit; }
 
   unsigned char rtpPayloadFormat() const { return fRTPPayloadFormat; }
@@ -63,9 +60,9 @@ public:
   Boolean& enableRTCPReports() { return fEnableRTCPReports; }
   Boolean const& enableRTCPReports() const { return fEnableRTCPReports; }
 
-  void setStreamSocket(int sockNum, unsigned char streamChannelId) {
+  void setStreamSocket(SocketDescriptor* socketDescriptor, unsigned char streamChannelId) {
     // hack to allow sending RTP over TCP (RFC 2236, section 10.12)
-    fRTPInterface.setStreamSocket(sockNum, streamChannelId);
+    fRTPInterface.setStreamSocket(socketDescriptor, streamChannelId);
   }
 
   void setAuxilliaryReadHandler(AuxHandlerFunc* handlerFunc,

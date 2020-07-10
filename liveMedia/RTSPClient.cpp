@@ -206,23 +206,6 @@ Boolean RTSPClient::changeResponseHandler(unsigned cseq, responseHandler* newRes
   return False;
 }
 
-Boolean RTSPClient::lookupByName(UsageEnvironment& env,
-         char const* instanceName,
-         RTSPClient*& resultClient) {
-  resultClient = NULL; // unless we succeed
-
-  Medium* medium;
-  if (!Medium::lookupByName(env, instanceName, medium)) return False;
-
-  if (!medium->isRTSPClient()) {
-    env.setResultMsg(instanceName, " is not a RTSP client");
-    return False;
-  }
-
-  resultClient = (RTSPClient*)medium;
-  return True;
-}
-
 static void copyUsernameOrPasswordStringFromURL(char* dest, char const* src, unsigned len) {
   // Normally, we just copy from the source to the destination.  However, if the source contains
   // %-encoded characters, then we decode them while doing the copy:
@@ -418,14 +401,6 @@ void RTSPClient::reset() {
 
 void RTSPClient::setBaseURL(char const* url) {
   delete[] fBaseURL; fBaseURL = strDup(url);
-}
-
-int RTSPClient::grabSocket() {
-  int inputSocket = fInputSocketNum;
-  RTPInterface::clearServerRequestAlternativeByteHandler(envir(), fInputSocketNum); // in case we were receiving RTP-over-TCP
-  fInputSocketNum = -1;
-
-  return inputSocket;
 }
 
 unsigned RTSPClient::sendRequest(RequestRecord* request) {
@@ -831,7 +806,7 @@ Boolean RTSPClient::isRTSPClient() const {
 
 void RTSPClient::resetTCPSockets() {
   if (fInputSocketNum >= 0) {
-    RTPInterface::clearServerRequestAlternativeByteHandler(envir(), fInputSocketNum); // in case we were receiving RTP-over-TCP
+    fInputSocketDescriptor->setServerRequestAlternativeByteHandler(0, 0);
     envir().taskScheduler().disableBackgroundHandling(fInputSocketNum);
     ::closeSocket(fInputSocketNum);
     if (fOutputSocketNum != fInputSocketNum) {
@@ -1152,61 +1127,74 @@ Boolean RTSPClient::parseRTPInfoParams(char const*& paramsStr, u_int16_t& seqNum
   return sawSeq && sawRtptime;
 }
 
-Boolean RTSPClient::handleSETUPResponse(MediaSubsession& subsession, char const* sessionParamsStr, char const* transportParamsStr,
-                                        Boolean streamUsingTCP) {
+Boolean RTSPClient::handleSETUPResponse(
+  MediaSubsession& subsession,
+  char const* sessionParamsStr,
+  char const* transportParamsStr,
+  Boolean streamUsingTCP
+)
+{
   char* sessionId = new char[responseBufferSize]; // ensures we have enough space
   Boolean success = False;
-  do {
-    // Check for a session id:
-    if (sessionParamsStr == NULL || sscanf(sessionParamsStr, "%[^;]", sessionId) != 1) {
-      envir().setResultMsg("Missing or bad \"Session:\" header");
-      break;
-    }
+  if (sessionParamsStr == NULL || sscanf(sessionParamsStr, "%[^;]", sessionId) != 1)
+  {
+    envir().setResultMsg("Missing or bad \"Session:\" header");
+  }
+  else
+  {
     subsession.setSessionId(sessionId);
     delete[] fLastSessionId; fLastSessionId = strDup(sessionId);
 
     // Also look for an optional "; timeout = " parameter following this:
     char const* afterSessionId = sessionParamsStr + strlen(sessionId);
     int timeoutVal;
-    if (sscanf(afterSessionId, "; timeout = %d", &timeoutVal) == 1) {
+    if (sscanf(afterSessionId, "; timeout = %d", &timeoutVal) == 1)
       fSessionTimeoutParameter = timeoutVal;
-    }
 
     // Parse the "Transport:" header parameters:
     char* serverAddressStr;
     portNumBits serverPortNum;
     unsigned char rtpChannelId, rtcpChannelId;
-    if (!parseTransportParams(transportParamsStr, serverAddressStr, serverPortNum, rtpChannelId, rtcpChannelId)) {
+    if (!parseTransportParams(transportParamsStr, serverAddressStr, serverPortNum, rtpChannelId, rtcpChannelId))
+    {
       envir().setResultMsg("Missing or bad \"Transport:\" header");
-      break;
     }
-    delete[] subsession.connectionEndpointName();
-    subsession.connectionEndpointName() = serverAddressStr;
-    subsession.serverPortNum = serverPortNum;
-    subsession.rtpChannelId = rtpChannelId;
-    subsession.rtcpChannelId = rtcpChannelId;
+    else
+    {
+      delete[] subsession.connectionEndpointName();
+      subsession.connectionEndpointName() = serverAddressStr;
+      subsession.serverPortNum = serverPortNum;
+      subsession.rtpChannelId = rtpChannelId;
+      subsession.rtcpChannelId = rtcpChannelId;
 
-    if (streamUsingTCP) {
-      // Tell the subsession to receive RTP (and send/receive RTCP) over the RTSP stream:
-      if (subsession.rtpSource() != NULL) {
-  subsession.rtpSource()->setStreamSocket(fInputSocketNum, subsession.rtpChannelId);
-    // So that we continue to receive & handle RTSP commands and responses from the server
-  subsession.rtpSource()->enableRTCPReports() = False;
-    // To avoid confusing the server (which won't start handling RTP/RTCP-over-TCP until "PLAY"), don't send RTCP "RR"s yet
-  increaseReceiveBufferTo(envir(), fInputSocketNum, 2000000);
+      if (streamUsingTCP)
+      {
+        fInputSocketDescriptor = new SocketDescriptor(envir(), fInputSocketNum);
+        // Tell the subsession to receive RTP (and send/receive RTCP) over the RTSP stream:
+        if (subsession.rtpSource() != NULL)
+        {
+          subsession.rtpSource()->setStreamSocket(fInputSocketDescriptor, subsession.rtpChannelId);
+          // So that we continue to receive & handle RTSP commands and responses from the server
+          subsession.rtpSource()->enableRTCPReports() = False;
+          // To avoid confusing the server (which won't start handling RTP/RTCP-over-TCP until "PLAY"), don't send RTCP "RR"s yet
+          increaseReceiveBufferTo(envir(), fInputSocketNum, 2000000);
+        }
+        if (subsession.rtcpInstance() != NULL)
+            subsession.rtcpInstance()->setStreamSocket(fInputSocketDescriptor, subsession.rtcpChannelId);
+        fInputSocketDescriptor->setServerRequestAlternativeByteHandler(handleAlternativeRequestByte, this);
       }
-      if (subsession.rtcpInstance() != NULL) subsession.rtcpInstance()->setStreamSocket(fInputSocketNum, subsession.rtcpChannelId);
-      RTPInterface::setServerRequestAlternativeByteHandler(envir(), fInputSocketNum, handleAlternativeRequestByte, this);
-    } else {
-      // Normal case.
-      // Set the RTP and RTCP sockets' destination address and port from the information in the SETUP response (if present):
-      netAddressBits destAddress = subsession.connectionEndpointAddress();
-      if (destAddress == 0) destAddress = fServerAddress;
-      subsession.setDestinations(destAddress);
+      else
+      {
+        // Normal case.
+        // Set the RTP and RTCP sockets' destination address and port from the information in the SETUP response (if present):
+        netAddressBits destAddress = subsession.connectionEndpointAddress();
+        if (destAddress == 0)
+          destAddress = fServerAddress;
+        subsession.setDestinations(destAddress);
+      }
+      success = True;
     }
-
-    success = True;
-  } while (0);
+  }
 
   delete[] sessionId;
   return success;
@@ -2001,7 +1989,7 @@ void RTSPClient::RequestQueue::reset() {
 }
 
 
-#ifndef OMIT_REGISTER_HANDLING
+#if 0 //ndef OMIT_REGISTER_HANDLING
 ////////// HandlerServerForREGISTERCommand implementation /////////
 
 HandlerServerForREGISTERCommand* HandlerServerForREGISTERCommand

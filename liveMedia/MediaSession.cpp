@@ -39,23 +39,6 @@ MediaSession* MediaSession::createNew(UsageEnvironment& env,
   return newSession;
 }
 
-Boolean MediaSession::lookupByName(UsageEnvironment& env,
-                                   char const* instanceName,
-                                   MediaSession*& resultSession) {
-  resultSession = NULL; // unless we succeed
-
-  Medium* medium;
-  if (!Medium::lookupByName(env, instanceName, medium)) return False;
-
-  if (!medium->isMediaSession()) {
-    env.setResultMsg(instanceName, " is not a 'MediaSession' object");
-    return False;
-  }
-
-  resultSession = (MediaSession*)medium;
-  return True;
-}
-
 MediaSession::MediaSession(UsageEnvironment& env)
   : Medium(env),
     fSubsessionsHead(NULL), fSubsessionsTail(NULL),

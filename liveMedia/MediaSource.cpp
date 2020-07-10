@@ -65,23 +65,6 @@ Boolean MediaSource::isAMRAudioSource() const {
   return False; // default implementation
 }
 
-Boolean MediaSource::lookupByName(UsageEnvironment& env,
-				  char const* sourceName,
-				  MediaSource*& resultSource) {
-  resultSource = NULL; // unless we succeed
-
-  Medium* medium;
-  if (!Medium::lookupByName(env, sourceName, medium)) return False;
-
-  if (!medium->isSource()) {
-    env.setResultMsg(sourceName, " is not a media source");
-    return False;
-  }
-
-  resultSource = (MediaSource*)medium;
-  return True;
-}
-
 void MediaSource::getAttributes() const {
   // Default implementation
   envir().setResultMsg("");

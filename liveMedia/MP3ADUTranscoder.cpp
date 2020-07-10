@@ -40,7 +40,7 @@ MP3ADUTranscoder* MP3ADUTranscoder::createNew(UsageEnvironment& env,
 					      FramedSource* inputSource) {
   // The source must be an MP3 ADU source:
   if (strcmp(inputSource->MIMEtype(), "audio/MPA-ROBUST") != 0) {
-    env.setResultMsg(inputSource->name(), " is not an MP3 ADU source");
+    env.setResultMsg("not an MP3 ADU source");
     return NULL;
   }
 

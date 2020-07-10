@@ -51,8 +51,6 @@ protected:
       // abstract base class
   virtual ~MP3ADUinterleaverBase();
 
-  static FramedSource* getInputSource(UsageEnvironment& env,
-				      char const* inputSourceName);
   static void afterGettingFrame(void* clientData,
 				unsigned numBytesRead,
 				unsigned numTruncatedBytes,

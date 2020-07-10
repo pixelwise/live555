@@ -38,22 +38,6 @@ Boolean FramedSource::isFramedSource() const {
   return True;
 }
 
-Boolean FramedSource::lookupByName(UsageEnvironment& env, char const* sourceName,
-				   FramedSource*& resultSource) {
-  resultSource = NULL; // unless we succeed
-
-  MediaSource* source;
-  if (!MediaSource::lookupByName(env, sourceName, source)) return False;
-
-  if (!source->isFramedSource()) {
-    env.setResultMsg(sourceName, " is not a framed source");
-    return False;
-  }
-
-  resultSource = (FramedSource*)source;
-  return True;
-}
-
 void FramedSource::getNextFrame(unsigned char* to, unsigned maxSize,
 				afterGettingFunc* afterGettingFunc,
 				void* afterGettingClientData,
