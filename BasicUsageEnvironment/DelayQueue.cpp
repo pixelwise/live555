@@ -123,10 +123,11 @@ DelayQueue::~DelayQueue() {
   }
 }
 
-void DelayQueue::addEntry(DelayQueueEntry* newEntry) {
+void DelayQueue::addEntry(DelayQueueEntry* newEntry)
+{
   synchronize();
 
-  DelayQueueEntry* cur = head();
+  auto cur = head();
   while (newEntry->fDeltaTimeRemaining >= cur->fDeltaTimeRemaining) {
     newEntry->fDeltaTimeRemaining -= cur->fDeltaTimeRemaining;
     cur = cur->fNext;
@@ -169,21 +170,23 @@ DelayQueueEntry* DelayQueue::removeEntry(intptr_t tokenToFind) {
   return entry;
 }
 
-DelayInterval const& DelayQueue::timeToNextAlarm() {
-  if (head()->fDeltaTimeRemaining == DELAY_ZERO) return DELAY_ZERO; // a common case
-
+DelayInterval const& DelayQueue::timeToNextAlarm()
+{
+  if (head()->fDeltaTimeRemaining == DELAY_ZERO)
+    return DELAY_ZERO; // a common case
   synchronize();
   return head()->fDeltaTimeRemaining;
 }
 
-void DelayQueue::handleAlarm() {
-  if (head()->fDeltaTimeRemaining != DELAY_ZERO) synchronize();
-
-  if (head()->fDeltaTimeRemaining == DELAY_ZERO) {
+void DelayQueue::handleAlarm()
+{
+  if (head()->fDeltaTimeRemaining != DELAY_ZERO)
+    synchronize();
+  if (head()->fDeltaTimeRemaining == DELAY_ZERO)
+  {
     // This event is due to be handled:
     DelayQueueEntry* toRemove = head();
     removeEntry(toRemove); // do this first, in case handler accesses queue
-
     toRemove->handleTimeout();
   }
 }
@@ -198,7 +201,8 @@ DelayQueueEntry* DelayQueue::findEntryByToken(intptr_t tokenToFind) {
   return NULL;
 }
 
-void DelayQueue::synchronize() {
+void DelayQueue::synchronize()
+{
   // First, figure out how much time has elapsed since the last sync:
   _EventTime timeNow = TimeNow();
   if (timeNow < fLastSyncTime) {

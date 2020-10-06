@@ -68,6 +68,8 @@ public:
   void operator-=(class DelayInterval const& arg2);
   // returns ZERO iff arg2 >= arg1
 
+  operator struct timeval() const {return fTv;}
+
 protected:
   Timeval(time_base_seconds seconds, time_base_seconds useconds) {
     fTv.tv_sec = seconds; fTv.tv_usec = useconds;
@@ -172,6 +174,7 @@ public:
   void handleAlarm();
 
 private:
+  const DelayQueueEntry* head() const { return fNext; }
   DelayQueueEntry* head() { return fNext; }
   DelayQueueEntry* findEntryByToken(intptr_t token);
   void synchronize(); // bring the 'time remaining' fields up-to-date

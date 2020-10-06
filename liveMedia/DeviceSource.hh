@@ -28,15 +28,9 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #include "FramedSource.hh"
 #endif
 
-// The following class can be used to define specific encoder parameters
-class DeviceParameters {
-  //%%% TO BE WRITTEN %%%
-};
-
 class DeviceSource: public FramedSource {
 public:
-  static DeviceSource* createNew(UsageEnvironment& env,
-				 DeviceParameters params);
+  static DeviceSource* createNew(UsageEnvironment& env);
 
 public:
   static EventTriggerId eventTriggerId;
@@ -45,7 +39,7 @@ public:
   // You can, however, redefine this to be a non-static member variable.
 
 protected:
-  DeviceSource(UsageEnvironment& env, DeviceParameters params);
+  DeviceSource(UsageEnvironment& env);
   // called only by createNew(), or by subclass constructors
   virtual ~DeviceSource();
 
@@ -60,7 +54,6 @@ private:
 
 private:
   static unsigned referenceCount; // used to count how many instances of this class currently exist
-  DeviceParameters fParams;
 };
 
 #endif

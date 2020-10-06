@@ -24,6 +24,8 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #include "BasicUsageEnvironment0.hh"
 #endif
 
+#include "HandlerSet.hh"
+
 class BasicUsageEnvironment: public BasicUsageEnvironment0 {
 public:
   static BasicUsageEnvironment* createNew(TaskScheduler& taskScheduler);
@@ -70,6 +72,7 @@ protected:
 protected:
   unsigned fMaxSchedulerGranularity;
 
+private:
   // To implement background operations:
   int fMaxNumSockets;
   fd_set fReadSet;
@@ -77,9 +80,32 @@ protected:
   fd_set fExceptionSet;
 
 private:
+  struct select_result_t
+  {
+    fd_set read;
+    fd_set write;
+    fd_set exceptions;
+    int condition_set(int sock) const
+    {
+      int resultConditionSet = 0;
+      if (FD_ISSET(sock, &read))
+        resultConditionSet |= SOCKET_READABLE;
+      if (FD_ISSET(sock, &write))
+        resultConditionSet |= SOCKET_WRITABLE;
+      if (FD_ISSET(sock, &exceptions))
+        resultConditionSet |= SOCKET_EXCEPTION;
+      return resultConditionSet;      
+    }
+  };
+  select_result_t perform_select(struct timeval) const;
+  struct timeval get_select_wait_time(unsigned maxDelayTime);
+  HandlerIterator pop_next_relevant_handler();
+  void perform_handler(HandlerIterator iter, select_result_t select_result);
+  void handle_newly_triggered_events();
+
 #if defined(__WIN32__) || defined(_WIN32)
   // Hack to work around a bug in Windows' "select()" implementation:
-  int fDummySocketNum;
+  mutable int fDummySocketNum;
 #endif
 };
 

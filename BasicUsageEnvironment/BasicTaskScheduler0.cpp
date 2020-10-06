@@ -212,7 +212,8 @@ HandlerDescriptor* HandlerSet::lookupHandler(int socketNum) {
 }
 
 HandlerIterator::HandlerIterator(HandlerSet& handlerSet)
-  : fOurSet(handlerSet) {
+: fOurSet(handlerSet)
+{
   reset();
 }
 
