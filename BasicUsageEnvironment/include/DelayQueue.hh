@@ -34,16 +34,24 @@ typedef long time_base_seconds;
 
 class Timeval {
 public:
-  time_base_seconds seconds() const {
+  Timeval(time_base_seconds seconds, time_base_seconds useconds)
+  {
+    fTv.tv_sec = seconds; fTv.tv_usec = useconds;
+  }
+  time_base_seconds seconds() const
+  {
     return fTv.tv_sec;
   }
-  time_base_seconds seconds() {
+  time_base_seconds seconds()
+  {
     return fTv.tv_sec;
   }
-  time_base_seconds useconds() const {
+  time_base_seconds useconds() const
+  {
     return fTv.tv_usec;
   }
-  time_base_seconds useconds() {
+  time_base_seconds useconds()
+  {
     return fTv.tv_usec;
   }
 
@@ -68,11 +76,9 @@ public:
   void operator-=(class DelayInterval const& arg2);
   // returns ZERO iff arg2 >= arg1
 
-  operator struct timeval() const {return fTv;}
-
-protected:
-  Timeval(time_base_seconds seconds, time_base_seconds useconds) {
-    fTv.tv_sec = seconds; fTv.tv_usec = useconds;
+  struct timeval value() const
+  {
+    return fTv;
   }
 
 private:
@@ -170,7 +176,7 @@ public:
   void removeEntry(DelayQueueEntry* entry); // but doesn't delete it
   DelayQueueEntry* removeEntry(intptr_t tokenToFind); // but doesn't delete it
 
-  DelayInterval const& timeToNextAlarm();
+  DelayInterval timeToNextAlarm() const;
   void handleAlarm();
 
 private:

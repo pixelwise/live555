@@ -170,11 +170,10 @@ DelayQueueEntry* DelayQueue::removeEntry(intptr_t tokenToFind) {
   return entry;
 }
 
-DelayInterval const& DelayQueue::timeToNextAlarm()
+DelayInterval DelayQueue::timeToNextAlarm() const
 {
   if (head()->fDeltaTimeRemaining == DELAY_ZERO)
     return DELAY_ZERO; // a common case
-  synchronize();
   return head()->fDeltaTimeRemaining;
 }
 

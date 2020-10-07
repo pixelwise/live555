@@ -73,35 +73,92 @@ protected:
   unsigned fMaxSchedulerGranularity;
 
 private:
-  // To implement background operations:
-  int fMaxNumSockets;
-  fd_set fReadSet;
-  fd_set fWriteSet;
-  fd_set fExceptionSet;
 
-private:
-  struct select_result_t
+  struct socket_sets_t
   {
+    socket_sets_t()
+    {
+      FD_ZERO(&read);
+      FD_ZERO(&write);
+      FD_ZERO(&exceptions);
+    }
     fd_set read;
     fd_set write;
     fd_set exceptions;
+    bool has_read_socket(int sock) const
+    {
+      return FD_ISSET(sock, &read);
+    }
+    bool has_write_socket(int sock) const
+    {
+      return FD_ISSET(sock, &write);
+    }
+    bool has_exception_socket(int sock) const
+    {
+      return FD_ISSET(sock, &exceptions);
+    }
+    bool has_socket(int sock) const
+    {
+      return has_read_socket(sock) || has_write_socket(sock) || has_exception_socket(sock);
+    }
     int condition_set(int sock) const
     {
       int resultConditionSet = 0;
-      if (FD_ISSET(sock, &read))
+      if (has_read_socket(sock))
         resultConditionSet |= SOCKET_READABLE;
-      if (FD_ISSET(sock, &write))
+      if (has_write_socket(sock))
         resultConditionSet |= SOCKET_WRITABLE;
-      if (FD_ISSET(sock, &exceptions))
+      if (has_exception_socket(sock))
         resultConditionSet |= SOCKET_EXCEPTION;
       return resultConditionSet;      
     }
+    void set_socket_conditions(int sock, int conditions)
+    {
+      read = set_socket_value(read, sock, conditions & SOCKET_READABLE);
+      write = set_socket_value(write, sock, conditions & SOCKET_WRITABLE);
+      exceptions = set_socket_value(exceptions, sock, conditions & SOCKET_EXCEPTION);
+    }
+    static fd_set set_socket_value(fd_set set, int sock, bool value)
+    {
+      if (value)
+        FD_SET(sock, &set);
+      else
+        FD_CLR(sock, &set);
+      return set;
+    }
+    static fd_set move_socket(fd_set set, int from_sock, int to_sock)
+    {
+      if (FD_ISSET(from_sock, &set))
+      {
+        set = set_socket_value(set, to_sock, true);
+        set = set_socket_value(set, from_sock, false);
+      }
+      return set;
+    }
+    void move_socket(int from_sock, int to_sock)
+    {
+      read = move_socket(read, from_sock, to_sock);
+      write = move_socket(write, from_sock, to_sock);
+      exceptions = move_socket(exceptions, from_sock, to_sock);
+    }
+    void remove_socket(int sock)
+    {
+      read = set_socket_value(read, sock, false);
+      write = set_socket_value(write, sock, false);
+      exceptions = set_socket_value(exceptions, sock, false);
+    }
   };
-  select_result_t perform_select(struct timeval) const;
-  struct timeval get_select_wait_time(unsigned maxDelayTime);
+
+  // To implement background operations:
+  int fMaxNumSockets;
+  socket_sets_t fSocketSets;
+
+  socket_sets_t perform_select(DelayInterval maxWaitTime) const;
+  DelayInterval get_select_wait_time(DelayInterval maxDelayTime) const;
   HandlerIterator pop_next_relevant_handler();
-  void perform_handler(HandlerIterator iter, select_result_t select_result);
-  void handle_newly_triggered_events();
+  HandlerDescriptor* find_handler(HandlerIterator iter, socket_sets_t select_result);
+  void perform_handler(HandlerDescriptor* handler, socket_sets_t select_result);
+  void perform_triggers();
 
 #if defined(__WIN32__) || defined(_WIN32)
   // Hack to work around a bug in Windows' "select()" implementation:
