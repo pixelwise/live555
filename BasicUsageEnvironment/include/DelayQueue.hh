@@ -42,15 +42,7 @@ public:
   {
     return fTv.tv_sec;
   }
-  time_base_seconds seconds()
-  {
-    return fTv.tv_sec;
-  }
   time_base_seconds useconds() const
-  {
-    return fTv.tv_usec;
-  }
-  time_base_seconds useconds()
   {
     return fTv.tv_usec;
   }
@@ -91,6 +83,11 @@ private:
 
   struct timeval fTv;
 };
+
+template<typename ostream_t> ostream_t& operator<<(ostream_t& os, Timeval t)
+{
+  return os << t.seconds() << "." << t.useconds();
+}
 
 #ifndef max
 inline Timeval max(Timeval const& arg1, Timeval const& arg2) {

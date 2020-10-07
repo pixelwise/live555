@@ -26,6 +26,8 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 #include "HandlerSet.hh"
 
+#include <optional>
+
 class BasicUsageEnvironment: public BasicUsageEnvironment0 {
 public:
   static BasicUsageEnvironment* createNew(TaskScheduler& taskScheduler);
@@ -154,7 +156,7 @@ private:
   socket_sets_t fSocketSets;
 
   socket_sets_t perform_select(DelayInterval maxWaitTime) const;
-  DelayInterval get_select_wait_time(DelayInterval maxDelayTime) const;
+  DelayInterval get_select_wait_time(std::optional<DelayInterval> maxDelayTime) const;
   HandlerIterator pop_next_relevant_handler();
   HandlerDescriptor* find_handler(HandlerIterator iter, socket_sets_t select_result);
   void perform_handler(HandlerDescriptor* handler, socket_sets_t select_result);

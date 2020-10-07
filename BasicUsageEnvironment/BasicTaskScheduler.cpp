@@ -30,8 +30,9 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 ////////// BasicTaskScheduler //////////
 
-BasicTaskScheduler* BasicTaskScheduler::createNew(unsigned maxSchedulerGranularity) {
-        return new BasicTaskScheduler(maxSchedulerGranularity);
+BasicTaskScheduler* BasicTaskScheduler::createNew(unsigned maxSchedulerGranularity)
+{
+    return new BasicTaskScheduler(maxSchedulerGranularity);
 }
 
 BasicTaskScheduler::BasicTaskScheduler(unsigned maxSchedulerGranularity)
@@ -63,8 +64,11 @@ void BasicTaskScheduler::schedulerTickTask() {
 #endif
 void BasicTaskScheduler::SingleStep(unsigned maxDelayTimeMicros)
 {
-    DelayInterval maxDelayTime(maxDelayTimeMicros / MILLION, maxDelayTimeMicros % MILLION);
-    auto select_result = perform_select(get_select_wait_time(maxDelayTime));
+    std::optional<DelayInterval> maxDelayTime;
+    if (maxDelayTimeMicros)
+        maxDelayTime = DelayInterval(maxDelayTimeMicros / MILLION, maxDelayTimeMicros % MILLION);
+    auto select_wait_time = get_select_wait_time(maxDelayTime);
+    auto select_result = perform_select(select_wait_time);
     if (auto handler = find_handler(pop_next_relevant_handler(), select_result))
         perform_handler(handler, select_result);
     // Note that we do this *after* calling a socket handler,
@@ -74,7 +78,16 @@ void BasicTaskScheduler::SingleStep(unsigned maxDelayTimeMicros)
     fDelayQueue.handleAlarm();
 }
 
-
+DelayInterval BasicTaskScheduler::get_select_wait_time(std::optional<DelayInterval> maxDelayTime) const
+{
+    auto result = std::min(
+        fDelayQueue.timeToNextAlarm(),
+        DelayInterval(MILLION, 0)
+    );
+    if (maxDelayTime)
+        result = std::min(result, *maxDelayTime);
+    return result;
+}
 
 auto BasicTaskScheduler::perform_select(DelayInterval maxWaitTime) const -> socket_sets_t
 {
@@ -133,17 +146,6 @@ auto BasicTaskScheduler::perform_select(DelayInterval maxWaitTime) const -> sock
         }
     }
     return socket_sets;
-}
-
-DelayInterval BasicTaskScheduler::get_select_wait_time(DelayInterval maxDelayTime) const
-{
-    return std::min(
-        fDelayQueue.timeToNextAlarm(),
-        std::min(
-            DelayInterval(MILLION, 0),
-            maxDelayTime
-        )
-    );
 }
 
 void BasicTaskScheduler::perform_triggers()
