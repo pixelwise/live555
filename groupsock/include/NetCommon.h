@@ -54,18 +54,6 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #define NO_STRSTREAM 1
 #endif
 
-/* Definitions of size-specific types: */
-typedef __int64 int64_t;
-typedef unsigned __int64 u_int64_t;
-
-typedef int int32_t;
-typedef unsigned u_int32_t;
-
-typedef short int16_t;
-typedef unsigned short u_int16_t;
-
-typedef unsigned char u_int8_t;
-
 // For "uintptr_t" and "intptr_t", we assume that if they're not already defined, then this must be
 // an old, 32-bit version of Windows:
 #if !defined(_MSC_STDINT_H_) && !defined(_UINTPTR_T_DEFINED) && !defined(_UINTPTR_T_DECLARED) && !defined(_UINTPTR_T)
@@ -85,13 +73,8 @@ typedef int intptr_t;
 #include <resolvLib.h>
 #include <ioLib.h>
 
-typedef unsigned int u_int32_t;
-typedef unsigned short u_int16_t;
-typedef unsigned char u_int8_t;
-
 #else
 /* Unix */
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <netinet/in.h>
@@ -111,16 +94,15 @@ typedef unsigned char u_int8_t;
 
 #define closeSocket close
 
-#ifdef SOLARIS
-#define u_int64_t uint64_t
-#define u_int32_t uint32_t
-#define u_int16_t uint16_t
-#define u_int8_t uint8_t
-#endif
 #endif
 
 #ifndef SOCKLEN_T
 #define SOCKLEN_T int
 #endif
+
+typedef uint64_t u_int64_t;
+typedef uint32_t u_int32_t;
+typedef uint16_t u_int16_t;
+typedef uint8_t u_int8_t;
 
 #endif
