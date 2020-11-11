@@ -78,4 +78,4 @@ private:
   struct timeval fSyncTime;
 };
 
-bool seqNumLT(u_int16_t s1, u_int16_t s2);
+bool seqNumLT(uint16_t s1, uint16_t s2);
