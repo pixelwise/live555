@@ -193,10 +193,7 @@ void RTPReceptionStats::consume_sequence_number(uint16_t sequence_number)
 {
   if (_last_rtp_sequence_number)
   {
-    size_t delta =
-      (sequence_number > *_last_rtp_sequence_number) ?
-      size_t(sequence_number - *_last_rtp_sequence_number) :
-      (size_t(sequence_number) + size_t(65536) - size_t(*_last_rtp_sequence_number));
+    auto delta = int16_t(sequence_number - *_last_rtp_sequence_number);
     fHighestExtSeqNumReceived += delta;
     if (delta > 100)
     {
