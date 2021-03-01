@@ -36,6 +36,7 @@ typedef void AuxHandlerFunc(void* clientData, unsigned char* packet,
 			    unsigned& packetSize);
 
 typedef void ServerRequestAlternativeByteHandler(void* instance, u_int8_t requestByte);
+typedef void ErrorHandler(void* instance);
 // A hack that allows a handler for RTP/RTCP packets received over TCP to process RTSP commands that may also appear within
 // the same TCP connection.  A RTSP server implementation would supply a function like this - as a parameter to
 // "ServerMediaSubsession::startStream()".
@@ -65,6 +66,12 @@ public:
   static void setServerRequestAlternativeByteHandler(UsageEnvironment& env, int socketNum,
 						     ServerRequestAlternativeByteHandler* handler, void* clientData);
   static void clearServerRequestAlternativeByteHandler(UsageEnvironment& env, int socketNum);
+  static void setErrorHandler(
+    UsageEnvironment& env,
+    int socketNum,
+    ErrorHandler* handler,
+    void* clientData
+  );
 
   Boolean sendPacket(unsigned char* packet, unsigned packetSize);
   void startNetworkReading(TaskScheduler::BackgroundHandlerProc*

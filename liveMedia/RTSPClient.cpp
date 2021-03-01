@@ -1152,6 +1152,13 @@ Boolean RTSPClient::parseRTPInfoParams(char const*& paramsStr, u_int16_t& seqNum
   return sawSeq && sawRtptime;
 }
 
+static void handleError(void* client_data)
+{
+  MediaSubsession* subsession = (MediaSubsession*)client_data;
+  if (subsession->sink)
+    subsession->sink->onSourceClosure();
+}
+
 Boolean RTSPClient::handleSETUPResponse(MediaSubsession& subsession, char const* sessionParamsStr, char const* transportParamsStr,
                                         Boolean streamUsingTCP) {
   char* sessionId = new char[responseBufferSize]; // ensures we have enough space
@@ -1197,6 +1204,7 @@ Boolean RTSPClient::handleSETUPResponse(MediaSubsession& subsession, char const*
       }
       if (subsession.rtcpInstance() != NULL) subsession.rtcpInstance()->setStreamSocket(fInputSocketNum, subsession.rtcpChannelId);
       RTPInterface::setServerRequestAlternativeByteHandler(envir(), fInputSocketNum, handleAlternativeRequestByte, this);
+      RTPInterface::setErrorHandler(envir(), fInputSocketNum, handleError, &subsession);
     } else {
       // Normal case.
       // Set the RTP and RTCP sockets' destination address and port from the information in the SETUP response (if present):

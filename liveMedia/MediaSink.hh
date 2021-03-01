@@ -40,6 +40,7 @@ public:
   virtual Boolean isRTPSink() const;
 
   FramedSource* source() const {return fSource;}
+  void onSourceClosure();
 
 protected:
   MediaSink(UsageEnvironment& env); // abstract base class
@@ -51,7 +52,6 @@ protected:
       // called by startPlaying()
 
   static void onSourceClosure(void* clientData); // can be used in "getNextFrame()" calls
-  void onSourceClosure();
       // should be called (on ourselves) by continuePlaying() when it
       // discovers that the source we're playing from has closed.
 

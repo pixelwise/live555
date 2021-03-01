@@ -59,6 +59,10 @@ public:
     fServerRequestAlternativeByteHandler = handler;
     fServerRequestAlternativeByteHandlerClientData = clientData;
   }
+  void setErrorHandler(ErrorHandler* handler, void* clientData) {
+    fErrorHandler = handler;
+    fErrorHandlerClientData = clientData;
+  }
 
 private:
   static void tcpReadHandler(SocketDescriptor*, int mask);
@@ -70,6 +74,8 @@ private:
   HashTable* fSubChannelHashTable;
   ServerRequestAlternativeByteHandler* fServerRequestAlternativeByteHandler;
   void* fServerRequestAlternativeByteHandlerClientData;
+  ErrorHandler* fErrorHandler;
+  void* fErrorHandlerClientData;
   u_int8_t fStreamChannelId, fSizeByte1;
   Boolean fReadErrorOccurred, fDeleteMyselfNext, fAreInReadHandlerLoop;
   enum { AWAITING_DOLLAR, AWAITING_STREAM_CHANNEL_ID, AWAITING_SIZE1, AWAITING_SIZE2, AWAITING_PACKET_DATA } fTCPReadingState;
@@ -205,8 +211,18 @@ void RTPInterface::removeStreamSocket(int sockNum,
 void RTPInterface::setServerRequestAlternativeByteHandler(UsageEnvironment& env, int socketNum,
 							  ServerRequestAlternativeByteHandler* handler, void* clientData) {
   SocketDescriptor* socketDescriptor = lookupSocketDescriptor(env, socketNum, False);
-
   if (socketDescriptor != NULL) socketDescriptor->setServerRequestAlternativeByteHandler(handler, clientData);
+}
+
+void RTPInterface::setErrorHandler(
+  UsageEnvironment& env,
+  int socketNum,
+  ErrorHandler* handler,
+  void* clientData
+)
+{
+  SocketDescriptor* socketDescriptor = lookupSocketDescriptor(env, socketNum, False);
+  if (socketDescriptor != NULL) socketDescriptor->setErrorHandler(handler, clientData);
 }
 
 void RTPInterface::clearServerRequestAlternativeByteHandler(UsageEnvironment& env, int socketNum) {
@@ -502,6 +518,8 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
 #ifdef DEBUG_RECEIVE
       fprintf(stderr, "SocketDescriptor(socket %d)::tcpReadHandler(): readSocket(1 byte) returned %d (error)\n", fOurSocketNum, result);
 #endif
+      if (fErrorHandler)
+        (*fErrorHandler)(fErrorHandlerClientData);
       fReadErrorOccurred = True;
       fDeleteMyselfNext = True;
       return False;
@@ -584,6 +602,8 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
 #ifdef DEBUG_RECEIVE
 	    fprintf(stderr, "SocketDescriptor(socket %d)::tcpReadHandler(): readSocket(1 byte) returned %d (error)\n", fOurSocketNum, result);
 #endif
+      if (fErrorHandler)
+        (*fErrorHandler)(fErrorHandlerClientData);
 	    fReadErrorOccurred = True;
 	    fDeleteMyselfNext = True;
 	    return False;
